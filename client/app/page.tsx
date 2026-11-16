@@ -62,7 +62,7 @@ const defaultProfile: ProfileData = {
   socials: [
     { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/shefin-kp/', iconKey: 'linkedin' },
     { platform: 'GitHub', url: 'https://github.com/shefiin', iconKey: 'github' },
-    { platform: 'X/Twitter', url: 'https://x.com/shefinkp_', iconKey: 'twitter' },
+    { platform: 'X', url: 'https://x.com/shefinkp_', iconKey: 'twitter' },
     { platform: 'Threads', url: 'https://www.threads.net/@shefiiney', iconKey: 'threads' },
     { platform: 'Bluesky', url: 'https://bsky.app/profile/shefiin.bsky.social', iconKey: 'bluesky' },
     { platform: 'Substack', url: 'https://substack.com/@shefin204168', iconKey: 'substack' },
