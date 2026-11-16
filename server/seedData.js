@@ -10,9 +10,6 @@ const initialProfile = {
   location: "Kerala, India",
   countryFlag: "🇮🇳",
   specialization: "Full-Stack Systems & Modern Architecture",
-  subtext: "Focused on clean system architecture, scalable backends, databases, and building reliable software at scale.",
-  available: true,
-  availabilityText: "Open to engineering opportunities & collaborations",
   email: "shefin@example.com",
   calLink: "https://cal.com/shefin",
   socials: [

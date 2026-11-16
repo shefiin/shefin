@@ -221,7 +221,7 @@ export default function Home() {
         </h1>
 
         {/* Bio paragraphs in clean monospace */}
-        <div className="space-y-2.5 text-[13.5px] text-neutral-800 leading-relaxed font-mono">
+        <div className="space-y-2 text-[13.5px] text-neutral-800 leading-relaxed font-mono mb-12">
           <p>
             Software Engineer based in {profile.location}{' '}
             <span className="inline-block">{profile.countryFlag}</span>
@@ -230,53 +230,9 @@ export default function Home() {
           <p>
             I engineer end-to-end web applications, robust backend APIs, and distributed systems across the modern TypeScript, Node, and database ecosystem.
           </p>
-
-          <p className="text-neutral-600">
-            {profile.subtext || "Focused on clean system architecture, scalable backends, databases, and building reliable software at scale."}
-          </p>
         </div>
 
-        {/* Availability status */}
-        <div className="flex items-center gap-2 text-xs font-mono text-neutral-600 mt-5 mb-12">
-          {profile.available ? (
-            <>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>{profile.availabilityText || "Open to engineering opportunities & collaborations"}</span>
-            </>
-          ) : (
-            <>
-              <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
-              <span>Currently focused on core engineering systems</span>
-            </>
-          )}
-        </div>
-
-        {/* SECTION 1: TECH STACK */}
-        <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
-            TECH STACK
-          </h2>
-          <p className="text-xs font-mono text-neutral-700 mb-3.5">
-            The tech stack I use for my personal and client work:
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
-              >
-                <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
-                <span>{tech.name}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SECTION 2: PROJECTS */}
+        {/* SECTION 1: PROJECTS (Top Priority) */}
         <section className="mb-12">
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
             PROJECTS
@@ -345,6 +301,28 @@ export default function Home() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        {/* SECTION 2: TECH STACK */}
+        <section className="mb-12">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
+            TECH STACK
+          </h2>
+          <p className="text-xs font-mono text-neutral-700 mb-3.5">
+            The technologies and tools I work with:
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {techStack.map((tech) => (
+              <div
+                key={tech.name}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+              >
+                <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
+                <span>{tech.name}</span>
+              </div>
+            ))}
           </div>
         </section>
 
