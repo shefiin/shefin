@@ -1,0 +1,110 @@
+const Profile = require('./models/Profile');
+const Project = require('./models/Project');
+const TechStack = require('./models/TechStack');
+
+const initialProfile = {
+  name: "Shefin",
+  tagline: "Hey, I'm Shefin!",
+  highlightWord: "Shefin!",
+  role: "A freelance full-stack engineer based in Kerala, India",
+  location: "Kerala, India",
+  countryFlag: "🇮🇳",
+  specialization: "React & Node ecosystem",
+  subtext: "If you need a reliable developer to build your product, I'm here to help.",
+  available: true,
+  availabilityText: "Available for new projects, let's talk!",
+  email: "shefin@example.com",
+  calLink: "https://cal.com/shefin",
+  socials: [
+    { platform: "X/Twitter", url: "https://x.com/shefin", iconKey: "twitter" },
+    { platform: "Threads", url: "https://threads.net/@shefin", iconKey: "threads" },
+    { platform: "Bluesky", url: "https://bsky.app/profile/shefin", iconKey: "bluesky" },
+    { platform: "LinkedIn", url: "https://linkedin.com/in/shefin", iconKey: "linkedin" },
+    { platform: "Substack", url: "https://substack.com/@shefin", iconKey: "substack" },
+    { platform: "GitHub", url: "https://github.com/shefin", iconKey: "github" }
+  ]
+};
+
+const initialTechStack = [
+  { name: "React", iconKey: "react", category: "Frontend", order: 1 },
+  { name: "Next.js", iconKey: "nextjs", category: "Frontend", order: 2 },
+  { name: "TanStack Start", iconKey: "tanstack", category: "Frontend", order: 3 },
+  { name: "TanStack Query", iconKey: "tanstack", category: "Frontend", order: 4 },
+  { name: "TypeScript", iconKey: "typescript", category: "Frontend", order: 5 },
+  { name: "Better Auth", iconKey: "betterauth", category: "Backend", order: 6 },
+  { name: "Node", iconKey: "node", category: "Backend", order: 7 },
+  { name: "Express", iconKey: "express", category: "Backend", order: 8 },
+  { name: "Fastify", iconKey: "fastify", category: "Backend", order: 9 },
+  { name: "Nest", iconKey: "nest", category: "Backend", order: 10 },
+  { name: "Postgres", iconKey: "postgres", category: "Database", order: 11 },
+  { name: "MongoDB", iconKey: "mongodb", category: "Database", order: 12 },
+  { name: "Prisma", iconKey: "prisma", category: "Database", order: 13 },
+  { name: "Supabase", iconKey: "supabase", category: "Database", order: 14 },
+  { name: "Docker", iconKey: "docker", category: "Tools", order: 15 },
+  { name: "Turborepo", iconKey: "turborepo", category: "Tools", order: 16 },
+  { name: "shadcn/ui", iconKey: "shadcn", category: "Frontend", order: 17 },
+  { name: "Tailwind", iconKey: "tailwind", category: "Frontend", order: 18 },
+  { name: "AI SDK", iconKey: "aisdk", category: "Tools", order: 19 }
+];
+
+const initialProjects = [
+  {
+    title: "Project Y",
+    description: "My new project that I work on in stealth mode for now...",
+    status: "Active",
+    iconKey: "mic",
+    link: "https://projecty.dev",
+    order: 1
+  },
+  {
+    title: "Listing Cat",
+    description: "Marketing database for startups and indie hackers.",
+    status: "Active",
+    iconKey: "cat",
+    link: "https://listingcat.com",
+    order: 2
+  },
+  {
+    title: "Bluesky Meter",
+    description: "Realtime analytics for Bluesky social network.",
+    status: "Sold",
+    iconKey: "bluesky",
+    link: "https://blueskymeter.com",
+    order: 3
+  },
+  {
+    title: "MERN Stack Suite",
+    description: "High performance web applications with Next.js, Express, and MongoDB.",
+    status: "Active",
+    iconKey: "database",
+    link: "https://github.com/shefin",
+    order: 4
+  }
+];
+
+async function seedDatabase() {
+  try {
+    const profileCount = await Profile.countDocuments();
+    if (profileCount === 0) {
+      await Profile.create(initialProfile);
+      console.log('🌱 Seeded initial profile');
+    }
+
+    const techCount = await TechStack.countDocuments();
+    if (techCount === 0) {
+      await TechStack.insertMany(initialTechStack);
+      console.log('🌱 Seeded initial tech stack');
+    }
+
+    const projectCount = await Project.countDocuments();
+    if (projectCount === 0) {
+      await Project.insertMany(initialProjects);
+      console.log('🌱 Seeded initial projects');
+    }
+  } catch (error) {
+    console.error('Error seeding database:', error);
+  }
+}
+
+module.exports = { seedDatabase, initialProfile, initialTechStack, initialProjects };
+
