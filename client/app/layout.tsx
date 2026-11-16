@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Shefin • Full-Stack Engineer",
-  description: "Personal portfolio of Shefin - Full-Stack Engineer specializing in React, Next.js, Express, and MongoDB.",
+  title: "Shefin • Software Engineer",
+  description: "Personal portfolio of Shefin - Software Engineer specializing in full-stack systems, scalable backend architectures, and distributed web applications.",
   icons: {
     icon: "/shefin.png",
   },

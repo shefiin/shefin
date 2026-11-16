@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { ProjectIcon } from './components/ProjectIcon';
-import { EmailModal } from './components/EmailModal';
-import { BookCallModal } from './components/BookCallModal';
 import { AdminDrawer } from './components/AdminDrawer';
 import { Database, ArrowUpRight } from 'lucide-react';
 
@@ -50,13 +48,13 @@ const defaultProfile: ProfileData = {
   name: 'Shefin',
   tagline: "Hey, I'm Shefin!",
   highlightWord: 'Shefin!',
-  role: 'A freelance full-stack engineer based in Kerala, India',
+  role: 'Software Engineer based in Kerala, India',
   location: 'Kerala, India',
   countryFlag: '🇮🇳',
-  specialization: 'React ecosystem',
-  subtext: "If you need a reliable developer to build your product, I'm here to help.",
+  specialization: 'Full-Stack Systems & Modern Architecture',
+  subtext: "Focused on clean system architecture, scalable backends, databases, and building reliable software at scale.",
   available: true,
-  availabilityText: "Available for new projects, let's talk!",
+  availabilityText: "Open to engineering opportunities & collaborations",
   email: 'shefin@example.com',
   calLink: 'https://cal.com/shefin',
   socials: [
@@ -126,8 +124,6 @@ export default function Home() {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [techStack, setTechStack] = useState<TechItem[]>(defaultTechStack);
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [isAdminDrawerOpen, setIsAdminDrawerOpen] = useState(false);
   const [isMongoLive, setIsMongoLive] = useState(false);
 
@@ -174,28 +170,10 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // Keyboard shortcut listener: 'b' for Book, 'e' for Email
+  // Keyboard shortcut listener: Escape closes drawer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing inside input, textarea, or contentEditable
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
-        return;
-      }
-
-      if (e.key === 'b' || e.key === 'B') {
-        e.preventDefault();
-        setIsBookModalOpen(true);
-      } else if (e.key === 'e' || e.key === 'E') {
-        e.preventDefault();
-        setIsEmailModalOpen(true);
-      } else if (e.key === 'Escape') {
-        setIsBookModalOpen(false);
-        setIsEmailModalOpen(false);
+      if (e.key === 'Escape') {
         setIsAdminDrawerOpen(false);
       }
     };
@@ -243,62 +221,35 @@ export default function Home() {
         </h1>
 
         {/* Bio paragraphs in clean monospace */}
-        <div className="space-y-2 text-[13.5px] text-neutral-800 leading-relaxed font-mono">
+        <div className="space-y-2.5 text-[13.5px] text-neutral-800 leading-relaxed font-mono">
           <p>
-            A freelance full-stack engineer based in {profile.location}{' '}
+            Software Engineer based in {profile.location}{' '}
             <span className="inline-block">{profile.countryFlag}</span>
           </p>
 
-          <p className="flex items-center gap-1.5 flex-wrap">
-            <span>I specialize on building web applications with</span>
-            <span className="inline-flex items-center gap-1 font-sans text-xs px-1.5 py-0.5 rounded bg-cyan-50 text-cyan-800 border border-cyan-200/60 font-medium">
-              <TechIcon name="react" className="w-3.5 h-3.5" />
-              <span>React ecosystem.</span>
-            </span>
+          <p>
+            I engineer end-to-end web applications, robust backend APIs, and distributed systems across the modern TypeScript, Node, and database ecosystem.
           </p>
 
-          <p className="text-neutral-700">
-            {profile.subtext || "If you need a reliable developer to build your product, I'm here to help."}
+          <p className="text-neutral-600">
+            {profile.subtext || "Focused on clean system architecture, scalable backends, databases, and building reliable software at scale."}
           </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2.5 mt-6 mb-3">
-          <button
-            onClick={() => setIsBookModalOpen(true)}
-            className="group inline-flex items-center gap-2 bg-[#171717] hover:bg-neutral-800 text-white text-[13px] font-sans font-medium px-3.5 py-1.5 rounded-full shadow-xs transition-colors cursor-pointer"
-          >
-            <span className="bg-[#2e2e2e] text-neutral-300 text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold group-hover:bg-[#3d3d3d] transition">
-              B
-            </span>
-            <span>Book a call</span>
-          </button>
-
-          <button
-            onClick={() => setIsEmailModalOpen(true)}
-            className="group inline-flex items-center gap-2 bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200 text-[13px] font-sans font-medium px-3.5 py-1.5 rounded-full shadow-2xs transition-colors cursor-pointer"
-          >
-            <span className="bg-neutral-100 text-neutral-600 text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold border border-neutral-200/80">
-              E
-            </span>
-            <span>Send an email</span>
-          </button>
         </div>
 
         {/* Availability status */}
-        <div className="flex items-center gap-2 text-xs font-mono text-neutral-600 mb-12">
+        <div className="flex items-center gap-2 text-xs font-mono text-neutral-600 mt-5 mb-12">
           {profile.available ? (
             <>
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span>Available for new projects, let&apos;s talk!</span>
+              <span>{profile.availabilityText || "Open to engineering opportunities & collaborations"}</span>
             </>
           ) : (
             <>
               <span className="w-2 h-2 rounded-full bg-neutral-400"></span>
-              <span>Currently working with select clients</span>
+              <span>Currently focused on core engineering systems</span>
             </>
           )}
         </div>
@@ -429,22 +380,24 @@ export default function Home() {
           </h2>
           <div className="space-y-1 text-xs font-mono text-neutral-700">
             <p>
-              You can reach me anytime at{' '}
-              <button
-                onClick={() => setIsEmailModalOpen(true)}
+              You can reach me directly at{' '}
+              <a
+                href={`mailto:${profile.email}`}
                 className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
               >
                 {profile.email}
-              </button>
+              </a>
             </p>
             <p>
-              Or book a call on{' '}
-              <button
-                onClick={() => setIsBookModalOpen(true)}
+              Or connect via{' '}
+              <a
+                href="https://www.linkedin.com/in/shefin-kp/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
               >
-                Cal.com
-              </button>
+                LinkedIn
+              </a>
             </p>
           </div>
         </section>
@@ -466,24 +419,12 @@ export default function Home() {
           </button>
 
           <span className="text-[10px] font-mono text-neutral-400">
-            Press <kbd className="px-1 py-0.5 bg-neutral-100 rounded text-neutral-600 border border-neutral-200">B</kbd> to Book • <kbd className="px-1 py-0.5 bg-neutral-100 rounded text-neutral-600 border border-neutral-200">E</kbd> to Email
+            Shefin • Software Engineer
           </span>
         </div>
       </div>
 
-      {/* Modals & Drawers */}
-      <EmailModal
-        isOpen={isEmailModalOpen}
-        onClose={() => setIsEmailModalOpen(false)}
-        recipientEmail={profile.email}
-      />
-
-      <BookCallModal
-        isOpen={isBookModalOpen}
-        onClose={() => setIsBookModalOpen(false)}
-        calLink={profile.calLink}
-      />
-
+      {/* MongoDB Management Drawer */}
       <AdminDrawer
         isOpen={isAdminDrawerOpen}
         onClose={() => setIsAdminDrawerOpen(false)}
