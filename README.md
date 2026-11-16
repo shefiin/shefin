@@ -83,3 +83,4 @@ npm run dev
 | `POST` | `/api/contact` | Submits and saves message into MongoDB |
 | `GET` | `/api/contact` | Retrieves all messages stored in MongoDB |
 | `POST` | `/api/seed` | Resets & re-seeds MongoDB with defaults |
+

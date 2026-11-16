@@ -60,12 +60,12 @@ const defaultProfile: ProfileData = {
   email: 'shefin@example.com',
   calLink: 'https://cal.com/shefin',
   socials: [
-    { platform: 'X/Twitter', url: 'https://x.com', iconKey: 'twitter' },
-    { platform: 'Threads', url: 'https://threads.net', iconKey: 'threads' },
-    { platform: 'Bluesky', url: 'https://bsky.app', iconKey: 'bluesky' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com', iconKey: 'linkedin' },
-    { platform: 'Substack', url: 'https://substack.com', iconKey: 'substack' },
-    { platform: 'GitHub', url: 'https://github.com', iconKey: 'github' },
+    { platform: 'X/Twitter', url: 'https://x.com/shefinkp_', iconKey: 'twitter' },
+    { platform: 'Threads', url: 'https://www.threads.net/@shefiiney', iconKey: 'threads' },
+    { platform: 'Bluesky', url: 'https://bsky.app/profile/shefiin.bsky.social', iconKey: 'bluesky' },
+    { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/shefin-kp/', iconKey: 'linkedin' },
+    { platform: 'Substack', url: 'https://substack.com/@shefin204168', iconKey: 'substack' },
+    { platform: 'GitHub', url: 'https://github.com/shefiin', iconKey: 'github' },
   ],
 };
 
@@ -118,7 +118,7 @@ const defaultProjects: Project[] = [
     description: 'High performance web applications with Next.js, Express, and MongoDB.',
     status: 'Active',
     iconKey: 'database',
-    link: 'https://github.com',
+    link: 'https://github.com/shefiin',
   },
 ];
 
