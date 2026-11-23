@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   title: "Shefin • Software Engineer",
   description: "Personal portfolio of Shefin - Software Engineer specializing in full-stack systems, scalable backend architectures, and distributed web applications.",
   icons: {
-    icon: "/shefin.png",
+    icon: [
+      { url: "/shefin.png" },
+      { url: "/favicon.ico" }
+    ],
+    shortcut: "/shefin.png",
+    apple: "/shefin.png",
   },
 };
 
