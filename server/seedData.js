@@ -1,6 +1,7 @@
 const Profile = require('./models/Profile');
 const Project = require('./models/Project');
 const TechStack = require('./models/TechStack');
+const Post = require('./models/Post');
 
 const initialProfile = {
   name: "Shefin",
@@ -79,6 +80,36 @@ const initialProjects = [
   }
 ];
 
+const initialPosts = [
+  {
+    title: "Designing Scalable Distributed Systems with Node.js & MongoDB",
+    description: "Deep dive into idempotency, distributed locks, database indexing strategies, and failure isolation patterns in high-throughput services.",
+    date: "Nov 2026",
+    readTime: "6 min read",
+    link: "https://substack.com/@shefin204168",
+    tags: ["Distributed Systems", "MongoDB", "Node.js"],
+    order: 1
+  },
+  {
+    title: "Fullstack Architecture: Why Next.js and Express Complement Each Other",
+    description: "How decoupling Edge UI rendering from dedicated compute backend workers creates resilient, maintainable production environments.",
+    date: "Oct 2026",
+    readTime: "5 min read",
+    link: "https://substack.com/@shefin204168",
+    tags: ["Next.js", "Express", "System Design"],
+    order: 2
+  },
+  {
+    title: "Building Microservices Without Over-Engineering",
+    description: "A pragmatic software engineer's perspective on when to break monoliths, managing data boundaries, and event-driven communication.",
+    date: "Aug 2026",
+    readTime: "4 min read",
+    link: "https://substack.com/@shefin204168",
+    tags: ["Architecture", "APIs", "Engineering"],
+    order: 3
+  }
+];
+
 async function seedDatabase() {
   try {
     const profileCount = await Profile.countDocuments();
@@ -98,10 +129,16 @@ async function seedDatabase() {
       await Project.insertMany(initialProjects);
       console.log('🌱 Seeded initial projects');
     }
+
+    const postCount = await Post.countDocuments();
+    if (postCount === 0) {
+      await Post.insertMany(initialPosts);
+      console.log('🌱 Seeded initial blog posts');
+    }
   } catch (error) {
     console.error('Error seeding database:', error);
   }
 }
 
-module.exports = { seedDatabase, initialProfile, initialTechStack, initialProjects };
+module.exports = { seedDatabase, initialProfile, initialTechStack, initialProjects, initialPosts };
 

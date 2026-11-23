@@ -17,6 +17,16 @@ interface Project {
   link?: string;
 }
 
+interface BlogPost {
+  _id?: string;
+  title: string;
+  description: string;
+  date: string;
+  readTime: string;
+  link?: string;
+  tags?: string[];
+}
+
 interface TechItem {
   _id?: string;
   name: string;
@@ -120,10 +130,38 @@ const defaultProjects: Project[] = [
   },
 ];
 
+const defaultPosts: BlogPost[] = [
+  {
+    title: 'Designing Scalable Distributed Systems with Node.js & MongoDB',
+    description: 'Deep dive into idempotency, distributed locks, database indexing strategies, and failure isolation patterns in high-throughput services.',
+    date: 'Nov 2026',
+    readTime: '6 min read',
+    link: 'https://substack.com/@shefin204168',
+    tags: ['Distributed Systems', 'MongoDB', 'Node.js'],
+  },
+  {
+    title: 'Fullstack Architecture: Why Next.js and Express Complement Each Other',
+    description: 'How decoupling Edge UI rendering from dedicated compute backend workers creates resilient, maintainable production environments.',
+    date: 'Oct 2026',
+    readTime: '5 min read',
+    link: 'https://substack.com/@shefin204168',
+    tags: ['Next.js', 'Express', 'System Design'],
+  },
+  {
+    title: 'Building Microservices Without Over-Engineering',
+    description: 'A pragmatic software engineer\'s perspective on when to break monoliths, managing data boundaries, and event-driven communication.',
+    date: 'Aug 2026',
+    readTime: '4 min read',
+    link: 'https://substack.com/@shefin204168',
+    tags: ['Architecture', 'APIs', 'Engineering'],
+  },
+];
+
 export default function Home() {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [techStack, setTechStack] = useState<TechItem[]>(defaultTechStack);
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
   const [isAdminDrawerOpen, setIsAdminDrawerOpen] = useState(false);
   const [isMongoLive, setIsMongoLive] = useState(false);
 
@@ -152,7 +190,16 @@ export default function Home() {
         }
       }
 
-      // 4. Tech Stack
+      // 4. Blog Posts
+      const postRes = await fetch('http://localhost:5001/api/posts');
+      if (postRes.ok) {
+        const postData = await postRes.json();
+        if (Array.isArray(postData) && postData.length > 0) {
+          setPosts(postData);
+        }
+      }
+
+      // 5. Tech Stack
       const techRes = await fetch('http://localhost:5001/api/tech-stack');
       if (techRes.ok) {
         const techData = await techRes.json();
@@ -304,7 +351,70 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 2: TECH STACK */}
+        {/* SECTION 2: BLOG */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium">
+              BLOG
+            </h2>
+            <a
+              href="https://substack.com/@shefin204168"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] font-mono text-neutral-400 hover:text-neutral-900 inline-flex items-center gap-1 transition group"
+            >
+              <span>Substack</span>
+              <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+          </div>
+          <p className="text-xs font-mono text-neutral-700 mb-3.5">
+            Technical writing on software systems, databases, and engineering:
+          </p>
+
+          <div className="space-y-3">
+            {posts.map((post, idx) => (
+              <a
+                key={post._id || idx}
+                href={post.link || 'https://substack.com/@shefin204168'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all shadow-2xs"
+              >
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
+                    <span>{post.date}</span>
+                    <span>•</span>
+                    <span>{post.readTime}</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-800 transition" />
+                </div>
+
+                <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition leading-snug mb-1">
+                  {post.title}
+                </h3>
+
+                <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
+                  {post.description}
+                </p>
+
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-neutral-100">
+                    {post.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* SECTION 3: TECH STACK */}
         <section className="mb-12">
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
             TECH STACK
@@ -326,7 +436,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 3: FIND ME ON */}
+        {/* SECTION 4: FIND ME ON */}
         <section className="mb-12">
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
             FIND ME ON

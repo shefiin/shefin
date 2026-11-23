@@ -80,6 +80,9 @@ npm run dev
 | `GET` | `/api/projects` | Retrieves list of projects from MongoDB |
 | `POST` | `/api/projects` | Adds a new project to MongoDB |
 | `GET` | `/api/tech-stack` | Retrieves tech stack list |
+| `GET` | `/api/posts` | Retrieves all published blog posts from MongoDB |
+| `POST` | `/api/posts` | Publishes a new blog post to MongoDB |
+| `DELETE` | `/api/posts/:id` | Deletes a blog post from MongoDB |
 | `POST` | `/api/contact` | Submits and saves message into MongoDB |
 | `GET` | `/api/contact` | Retrieves all messages stored in MongoDB |
 | `POST` | `/api/seed` | Resets & re-seeds MongoDB with defaults |

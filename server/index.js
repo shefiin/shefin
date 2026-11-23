@@ -7,7 +7,8 @@ const Profile = require('./models/Profile');
 const Project = require('./models/Project');
 const TechStack = require('./models/TechStack');
 const ContactMessage = require('./models/ContactMessage');
-const { seedDatabase, initialProfile, initialTechStack, initialProjects } = require('./seedData');
+const Post = require('./models/Post');
+const { seedDatabase, initialProfile, initialTechStack, initialProjects, initialPosts } = require('./seedData');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -152,12 +153,46 @@ app.get('/api/contact', async (req, res) => {
   }
 });
 
-// 6. Reset/Re-seed endpoint
+// 6. Blog endpoints
+app.get('/api/posts', async (req, res) => {
+  try {
+    let posts = await Post.find({ published: true }).sort({ order: 1, createdAt: -1 });
+    if (posts.length === 0) {
+      posts = await Post.insertMany(initialPosts);
+    }
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: error.message, fallback: initialPosts });
+  }
+});
+
+app.post('/api/posts', async (req, res) => {
+  try {
+    const post = new Post(req.body);
+    await post.save();
+    res.status(201).json(post);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete('/api/posts/:id', async (req, res) => {
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    res.json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 7. Reset/Re-seed endpoint
 app.post('/api/seed', async (req, res) => {
   try {
     await Profile.deleteMany({});
     await Project.deleteMany({});
     await TechStack.deleteMany({});
+    await Post.deleteMany({});
     await seedDatabase();
     res.json({ success: true, message: 'Database reset and re-seeded!' });
   } catch (error) {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Database, RefreshCw, Plus, CheckCircle, Mail, Globe, Server, Check } from 'lucide-react';
+import { X, Database, RefreshCw, Plus, CheckCircle, Mail, Globe, Server, Check, BookOpen, Trash2 } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -10,6 +10,16 @@ interface Project {
   status: string;
   iconKey: string;
   link?: string;
+}
+
+interface BlogPost {
+  _id?: string;
+  title: string;
+  description: string;
+  date: string;
+  readTime: string;
+  link?: string;
+  tags?: string[];
 }
 
 interface Message {
@@ -35,9 +45,11 @@ export function AdminDrawer({
   available,
   onToggleAvailability
 }: AdminDrawerProps) {
-  const [activeTab, setActiveTab] = useState<'messages' | 'projects' | 'status'>('messages');
+  const [activeTab, setActiveTab] = useState<'messages' | 'projects' | 'posts' | 'status'>('messages');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
   const [health, setHealth] = useState<{ status: string; mongoConnected: boolean } | null>(null);
 
   // New project state
@@ -47,12 +59,22 @@ export function AdminDrawer({
   const [newIcon, setNewIcon] = useState('code');
   const [newLink, setNewLink] = useState('');
   const [submittingProject, setSubmittingProject] = useState(false);
+
+  // New blog post state
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostDesc, setNewPostDesc] = useState('');
+  const [newPostTags, setNewPostTags] = useState('');
+  const [newPostLink, setNewPostLink] = useState('https://substack.com/@shefin204168');
+  const [newPostReadTime, setNewPostReadTime] = useState('5 min read');
+  const [submittingPost, setSubmittingPost] = useState(false);
+
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       fetchHealth();
       fetchMessages();
+      fetchPosts();
     }
   }, [isOpen]);
 
@@ -78,6 +100,21 @@ export function AdminDrawer({
       console.error(err);
     } finally {
       setLoadingMessages(false);
+    }
+  };
+
+  const fetchPosts = async () => {
+    setLoadingPosts(true);
+    try {
+      const res = await fetch('http://localhost:5001/api/posts');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setPosts(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingPosts(false);
     }
   };
 
@@ -108,6 +145,59 @@ export function AdminDrawer({
       console.error(err);
     } finally {
       setSubmittingProject(false);
+    }
+  };
+
+  const handleAddPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingPost(true);
+    try {
+      const tagsArray = newPostTags
+        ? newPostTags.split(',').map((t) => t.trim()).filter(Boolean)
+        : [];
+
+      const res = await fetch('http://localhost:5001/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newPostTitle,
+          description: newPostDesc,
+          tags: tagsArray,
+          link: newPostLink || 'https://substack.com/@shefin204168',
+          readTime: newPostReadTime || '5 min read',
+          date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        })
+      });
+      if (res.ok) {
+        setNewPostTitle('');
+        setNewPostDesc('');
+        setNewPostTags('');
+        setActionNotice('Blog post added to MongoDB successfully!');
+        setTimeout(() => setActionNotice(null), 3000);
+        fetchPosts();
+        onDataRefresh();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmittingPost(false);
+    }
+  };
+
+  const handleDeletePost = async (id: string) => {
+    if (!confirm('Delete this blog post from MongoDB?')) return;
+    try {
+      const res = await fetch(`http://localhost:5001/api/posts/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        setActionNotice('Blog post deleted!');
+        setTimeout(() => setActionNotice(null), 3000);
+        fetchPosts();
+        onDataRefresh();
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -192,6 +282,18 @@ export function AdminDrawer({
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Project</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('posts')}
+            className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
+              activeTab === 'posts'
+                ? 'border-neutral-900 text-neutral-900'
+                : 'border-transparent text-neutral-500 hover:text-neutral-800'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Blog ({posts.length})</span>
           </button>
 
           <button
@@ -351,6 +453,149 @@ export function AdminDrawer({
                 {submittingProject ? 'Writing to MongoDB...' : '+ Save Project to MongoDB'}
               </button>
             </form>
+          )}
+
+          {activeTab === 'posts' && (
+            <div className="space-y-4">
+              <form onSubmit={handleAddPost} className="space-y-3 p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50">
+                <p className="text-xs font-mono text-neutral-700 font-semibold">
+                  Publish New Blog Post to MongoDB
+                </p>
+
+                <div>
+                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                    Post Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newPostTitle}
+                    onChange={(e) => setNewPostTitle(e.target.value)}
+                    placeholder="e.g. Scaling Database Transactions at High Concurrency"
+                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                    Summary / Description
+                  </label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={newPostDesc}
+                    onChange={(e) => setNewPostDesc(e.target.value)}
+                    placeholder="Brief description or takeaway..."
+                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                      Read Time
+                    </label>
+                    <input
+                      type="text"
+                      value={newPostReadTime}
+                      onChange={(e) => setNewPostReadTime(e.target.value)}
+                      placeholder="e.g. 5 min read"
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                      Tags (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={newPostTags}
+                      onChange={(e) => setNewPostTags(e.target.value)}
+                      placeholder="Node.js, Architecture"
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                    Article Link (Substack or External)
+                  </label>
+                  <input
+                    type="text"
+                    value={newPostLink}
+                    onChange={(e) => setNewPostLink(e.target.value)}
+                    placeholder="https://substack.com/..."
+                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingPost}
+                  className="w-full mt-1 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
+                >
+                  {submittingPost ? 'Saving...' : '+ Publish to MongoDB'}
+                </button>
+              </form>
+
+              {/* Existing Posts List */}
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono text-neutral-500">
+                    Existing Posts ({posts.length})
+                  </span>
+                  <button
+                    onClick={fetchPosts}
+                    className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Refresh
+                  </button>
+                </div>
+
+                {loadingPosts ? (
+                  <div className="text-center py-4 text-xs font-mono text-neutral-400">
+                    Loading posts...
+                  </div>
+                ) : posts.length === 0 ? (
+                  <div className="text-center py-6 text-xs font-mono text-neutral-400 border border-dashed rounded-xl">
+                    No blog posts yet in MongoDB.
+                  </div>
+                ) : (
+                  posts.map((post) => (
+                    <div
+                      key={post._id || post.title}
+                      className="p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 flex items-start justify-between gap-2"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400">
+                          <span>{post.date}</span>
+                          <span>•</span>
+                          <span>{post.readTime}</span>
+                        </div>
+                        <h5 className="text-xs font-mono font-semibold text-neutral-900">
+                          {post.title}
+                        </h5>
+                        <p className="text-[11px] font-mono text-neutral-500 line-clamp-1">
+                          {post.description}
+                        </p>
+                      </div>
+                      {post._id && (
+                        <button
+                          onClick={() => handleDeletePost(post._id!)}
+                          className="p-1 text-neutral-400 hover:text-red-600 transition shrink-0"
+                          title="Delete from MongoDB"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           )}
 
           {activeTab === 'status' && (
