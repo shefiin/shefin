@@ -122,6 +122,19 @@ app.get('/api/tech-stack', async (req, res) => {
   }
 });
 
+app.put('/api/tech-stack', async (req, res) => {
+  try {
+    if (Array.isArray(req.body)) {
+      await TechStack.deleteMany({});
+      const items = await TechStack.insertMany(req.body);
+      return res.json(items);
+    }
+    res.status(400).json({ error: 'Array of tech stack items expected' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 5. Contact message endpoints
 app.post('/api/contact', async (req, res) => {
   try {

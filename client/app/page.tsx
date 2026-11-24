@@ -78,25 +78,22 @@ const defaultProfile: ProfileData = {
 };
 
 const defaultTechStack: TechItem[] = [
-  { name: 'React', iconKey: 'react' },
-  { name: 'Next.js', iconKey: 'nextjs' },
-  { name: 'TanStack Start', iconKey: 'tanstack' },
-  { name: 'TanStack Query', iconKey: 'tanstack' },
-  { name: 'TypeScript', iconKey: 'typescript' },
-  { name: 'Better Auth', iconKey: 'betterauth' },
-  { name: 'Node', iconKey: 'node' },
+  { name: 'Node.js', iconKey: 'node' },
   { name: 'Express', iconKey: 'express' },
-  { name: 'Fastify', iconKey: 'fastify' },
-  { name: 'Nest', iconKey: 'nest' },
-  { name: 'Postgres', iconKey: 'postgres' },
   { name: 'MongoDB', iconKey: 'mongodb' },
-  { name: 'Prisma', iconKey: 'prisma' },
-  { name: 'Supabase', iconKey: 'supabase' },
+  { name: 'PostgreSQL', iconKey: 'postgres' },
+  { name: 'JavaScript', iconKey: 'javascript' },
+  { name: 'TypeScript', iconKey: 'typescript' },
+  { name: 'Next.js', iconKey: 'nextjs' },
+  { name: 'React', iconKey: 'react' },
   { name: 'Docker', iconKey: 'docker' },
-  { name: 'Turborepo', iconKey: 'turborepo' },
-  { name: 'shadcn/ui', iconKey: 'shadcn' },
+  { name: 'HTML5', iconKey: 'html' },
+  { name: 'CSS3', iconKey: 'css' },
   { name: 'Tailwind', iconKey: 'tailwind' },
-  { name: 'AI SDK', iconKey: 'aisdk' },
+  { name: 'Supabase', iconKey: 'supabase' },
+  { name: 'RabbitMQ', iconKey: 'rabbitmq' },
+  { name: 'Kafka', iconKey: 'kafka' },
+  { name: 'Redis', iconKey: 'redis' },
 ];
 
 const defaultProjects: Project[] = [

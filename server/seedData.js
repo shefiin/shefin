@@ -24,25 +24,22 @@ const initialProfile = {
 };
 
 const initialTechStack = [
-  { name: "React", iconKey: "react", category: "Frontend", order: 1 },
-  { name: "Next.js", iconKey: "nextjs", category: "Frontend", order: 2 },
-  { name: "TanStack Start", iconKey: "tanstack", category: "Frontend", order: 3 },
-  { name: "TanStack Query", iconKey: "tanstack", category: "Frontend", order: 4 },
-  { name: "TypeScript", iconKey: "typescript", category: "Frontend", order: 5 },
-  { name: "Better Auth", iconKey: "betterauth", category: "Backend", order: 6 },
-  { name: "Node", iconKey: "node", category: "Backend", order: 7 },
-  { name: "Express", iconKey: "express", category: "Backend", order: 8 },
-  { name: "Fastify", iconKey: "fastify", category: "Backend", order: 9 },
-  { name: "Nest", iconKey: "nest", category: "Backend", order: 10 },
-  { name: "Postgres", iconKey: "postgres", category: "Database", order: 11 },
-  { name: "MongoDB", iconKey: "mongodb", category: "Database", order: 12 },
-  { name: "Prisma", iconKey: "prisma", category: "Database", order: 13 },
-  { name: "Supabase", iconKey: "supabase", category: "Database", order: 14 },
-  { name: "Docker", iconKey: "docker", category: "Tools", order: 15 },
-  { name: "Turborepo", iconKey: "turborepo", category: "Tools", order: 16 },
-  { name: "shadcn/ui", iconKey: "shadcn", category: "Frontend", order: 17 },
-  { name: "Tailwind", iconKey: "tailwind", category: "Frontend", order: 18 },
-  { name: "AI SDK", iconKey: "aisdk", category: "Tools", order: 19 }
+  { name: "Node.js", iconKey: "node", category: "Backend", order: 1 },
+  { name: "Express", iconKey: "express", category: "Backend", order: 2 },
+  { name: "MongoDB", iconKey: "mongodb", category: "Database", order: 3 },
+  { name: "PostgreSQL", iconKey: "postgres", category: "Database", order: 4 },
+  { name: "JavaScript", iconKey: "javascript", category: "Frontend", order: 5 },
+  { name: "TypeScript", iconKey: "typescript", category: "Frontend", order: 6 },
+  { name: "Next.js", iconKey: "nextjs", category: "Frontend", order: 7 },
+  { name: "React", iconKey: "react", category: "Frontend", order: 8 },
+  { name: "Docker", iconKey: "docker", category: "Tools", order: 9 },
+  { name: "HTML5", iconKey: "html", category: "Frontend", order: 10 },
+  { name: "CSS3", iconKey: "css", category: "Frontend", order: 11 },
+  { name: "Tailwind", iconKey: "tailwind", category: "Frontend", order: 12 },
+  { name: "Supabase", iconKey: "supabase", category: "Database", order: 13 },
+  { name: "RabbitMQ", iconKey: "rabbitmq", category: "Backend", order: 14 },
+  { name: "Kafka", iconKey: "kafka", category: "Backend", order: 15 },
+  { name: "Redis", iconKey: "redis", category: "Database", order: 16 }
 ];
 
 const initialProjects = [
