@@ -242,18 +242,13 @@ export default function WritingStudio() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 border border-emerald-200/70 text-[11px] font-mono text-emerald-800">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{adminUser.email}</span>
-            </div>
-
             <button
               type="button"
               onClick={() => setPreviewMode(!previewMode)}
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border ${
                 previewMode
                   ? 'bg-neutral-100 text-neutral-900 border-neutral-300 font-semibold'
-                  : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
+                  : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -264,9 +259,9 @@ export default function WritingStudio() {
               type="button"
               onClick={handlePublish}
               disabled={isPublishing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-neutral-900 hover:bg-neutral-800 text-white transition disabled:opacity-50 shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition border bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50"
             >
-              <Save className="w-3.5 h-3.5 text-amber-400" />
+              <Save className="w-3.5 h-3.5 text-neutral-500" />
               <span>{isPublishing ? 'Publishing...' : postId ? 'Update Post' : 'Publish Article'}</span>
             </button>
 

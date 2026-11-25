@@ -265,9 +265,9 @@ export default function Home() {
           href="/write"
           title="Writing Studio"
           aria-label="Writing Studio"
-          className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 w-9 h-9 rounded-full bg-white hover:bg-neutral-900 text-neutral-600 hover:text-white border border-neutral-200/90 shadow-xs flex items-center justify-center transition-all duration-200 group"
+          className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-200 group"
         >
-          <PenLine className="w-4 h-4 text-neutral-600 group-hover:text-amber-400 transition-colors" />
+          <PenLine className="w-4 h-4 text-neutral-500 group-hover:text-neutral-800 transition-colors" />
         </Link>
       )}
 

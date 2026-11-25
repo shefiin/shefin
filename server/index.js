@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
@@ -37,33 +38,29 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-// Ensure uploads folder exists
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Configure Multer storage for images, gifs, and videos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    const safeName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    cb(null, `${safeName}-${uniqueSuffix}${ext}`);
-  }
+// Configure Cloudinary for media storage
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'df6m5dpnw',
+  api_key: process.env.CLOUDINARY_API_KEY || '968988713754762',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'RkHzEHaIj_oVcUqt_6qD3Zx5tG4',
+  secure: true
 });
 
+// Configure Multer storage (memory storage to stream directly to Cloudinary)
+const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB max for video/gif/images
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB max for video/gif/images
 });
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+// Static uploads directory (for backwards compatibility)
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 app.use('/uploads', express.static(uploadsDir));
 
 // Database connection
@@ -142,20 +139,36 @@ app.get('/api/auth/me', verifyAdmin, async (req, res) => {
   }
 });
 
-// File upload endpoint for images, gifs, and videos
+// File upload endpoint for images, gifs, and videos via Cloudinary
 app.post('/api/upload', verifyAdmin, upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    const fileUrl = `http://localhost:5001/uploads/${req.file.filename}`;
-    res.json({
-      success: true,
-      url: fileUrl,
-      filename: req.file.filename,
-      mimetype: req.file.mimetype,
-      size: req.file.size
-    });
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'portfolio',
+        resource_type: 'auto'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return res.status(500).json({ error: error.message || 'Failed to upload media to Cloudinary' });
+        }
+
+        res.json({
+          success: true,
+          url: result.secure_url,
+          public_id: result.public_id,
+          format: result.format,
+          resource_type: result.resource_type,
+          bytes: result.bytes
+        });
+      }
+    );
+
+    uploadStream.end(req.file.buffer);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
