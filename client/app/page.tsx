@@ -378,7 +378,7 @@ export default function Home() {
                 href={post.link || 'https://substack.com/@shefin204168'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all shadow-2xs"
+                className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
               >
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
@@ -424,7 +424,7 @@ export default function Home() {
             {techStack.map((tech) => (
               <div
                 key={tech.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors"
               >
                 <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
                 <span>{tech.name}</span>
