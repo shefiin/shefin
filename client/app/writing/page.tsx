@@ -364,7 +364,7 @@ function WritingsList() {
                           <div className="flex items-center gap-2 text-[10.5px] text-neutral-400">
                             {post.seriesOrder ? (
                               <span className="px-1.5 py-0.2 rounded bg-amber-100/90 text-amber-900 font-semibold border border-amber-200/60 text-[10px]">
-                                Part {post.seriesOrder}
+                                #{post.seriesOrder}
                               </span>
                             ) : null}
                             <span>{post.date}</span>

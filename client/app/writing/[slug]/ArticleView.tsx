@@ -353,7 +353,7 @@ export default function ArticleView({ slug }: { slug: string }) {
                 >
                   {post.project}
                 </Link>
-                {post.seriesOrder ? ` (Part ${post.seriesOrder})` : ''}
+                {post.seriesOrder ? ` #${post.seriesOrder}` : ''}
               </span>
             </div>
           )}

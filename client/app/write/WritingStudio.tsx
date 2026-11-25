@@ -378,7 +378,7 @@ export default function WritingStudio() {
                 <FileText className="w-3.5 h-3.5 text-amber-600" />
                 <span>
                   Part of series: <strong>{project}</strong>
-                  {seriesOrder ? ` (Part ${seriesOrder})` : ''}
+                  {seriesOrder ? ` #${seriesOrder}` : ''}
                 </span>
               </div>
             )}
@@ -509,7 +509,7 @@ export default function WritingStudio() {
 
                 {project && (
                   <div className="flex items-center gap-1.5 ml-1">
-                    <span className="text-neutral-400 text-[11px]">Part #:</span>
+                    <span className="text-neutral-400 text-[11px]">#:</span>
                     <input
                       type="number"
                       min="1"
