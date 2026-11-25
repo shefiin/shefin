@@ -9,7 +9,7 @@ import {
   Clock,
   Calendar,
   Search,
-  FolderGit2,
+  FileText,
   BookOpen,
   Hash,
   PenLine,
@@ -214,10 +214,6 @@ function WritingsList() {
 
       {/* Header */}
       <header className="mb-8">
-        <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1.5 font-medium">
-          <BookOpen className="w-3.5 h-3.5 text-amber-600" />
-          <span className="uppercase tracking-widest text-[11px]">WRITINGS & DOCUMENTATION</span>
-        </div>
         <h1 className="text-2xl sm:text-[26px] font-sans font-bold text-neutral-900 tracking-tight leading-snug mb-2">
           Engineering Logs & Articles
         </h1>
@@ -235,24 +231,22 @@ function WritingsList() {
               setSelectedTab('all');
               setSelectedProject('');
             }}
-            className={`px-3 py-1 rounded-lg text-xs transition ${
-              selectedTab === 'all'
-                ? 'bg-neutral-900 text-white font-medium'
-                : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
-            }`}
+            className={`px-3 py-1 rounded-lg text-xs transition ${selectedTab === 'all'
+              ? 'bg-neutral-900 text-white font-medium'
+              : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
+              }`}
           >
             All Writings ({posts.length})
           </button>
 
           <button
             onClick={() => setSelectedTab('projects')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs transition ${
-              selectedTab === 'projects'
-                ? 'bg-neutral-900 text-white font-medium'
-                : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
-            }`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs transition ${selectedTab === 'projects'
+              ? 'bg-neutral-900 text-white font-medium'
+              : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
+              }`}
           >
-            <FolderGit2 className="w-3 h-3 text-amber-400" />
+            <FileText className="w-3.5 h-3.5 text-amber-500" />
             <span>Project Series ({projectPostsCount})</span>
           </button>
 
@@ -261,11 +255,10 @@ function WritingsList() {
               setSelectedTab('standalone');
               setSelectedProject('');
             }}
-            className={`px-3 py-1 rounded-lg text-xs transition ${
-              selectedTab === 'standalone'
-                ? 'bg-neutral-900 text-white font-medium'
-                : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
-            }`}
+            className={`px-3 py-1 rounded-lg text-xs transition ${selectedTab === 'standalone'
+              ? 'bg-neutral-900 text-white font-medium'
+              : 'bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60'
+              }`}
           >
             Standalone Notes ({standalonePostsCount})
           </button>
@@ -277,11 +270,10 @@ function WritingsList() {
             <span className="text-[11px] text-neutral-400 mr-1">Project:</span>
             <button
               onClick={() => setSelectedProject('')}
-              className={`px-2 py-0.5 rounded text-[11px] transition ${
-                selectedProject === ''
-                  ? 'bg-amber-100 text-amber-900 font-semibold border border-amber-300'
-                  : 'bg-neutral-50 text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
-              }`}
+              className={`px-2 py-0.5 rounded text-[11px] transition ${selectedProject === ''
+                ? 'bg-amber-100 text-amber-900 font-semibold border border-amber-300'
+                : 'bg-neutral-50 text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                }`}
             >
               All Projects
             </button>
@@ -289,11 +281,10 @@ function WritingsList() {
               <button
                 key={name}
                 onClick={() => setSelectedProject(name)}
-                className={`px-2 py-0.5 rounded text-[11px] transition ${
-                  selectedProject === name
-                    ? 'bg-amber-100 text-amber-900 font-semibold border border-amber-300'
-                    : 'bg-neutral-50 text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
-                }`}
+                className={`px-2 py-0.5 rounded text-[11px] transition ${selectedProject === name
+                  ? 'bg-amber-100 text-amber-900 font-semibold border border-amber-300'
+                  : 'bg-neutral-50 text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                  }`}
               >
                 {name}
               </button>
@@ -351,7 +342,7 @@ function WritingsList() {
                   {/* Project Series Header */}
                   <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-neutral-200">
                     <div className="flex items-center gap-2">
-                      <FolderGit2 className="w-4 h-4 text-amber-600 shrink-0" />
+                      <FileText className="w-4 h-4 text-amber-600 shrink-0" />
                       <h2 className="text-xs font-semibold text-neutral-900 tracking-tight">
                         {projectName}
                       </h2>

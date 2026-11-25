@@ -19,7 +19,7 @@ import {
   LogOut,
   ShieldCheck,
   RefreshCw,
-  FolderGit2
+  FileText
 } from 'lucide-react';
 import {
   getAuthHeaders,
@@ -375,7 +375,7 @@ export default function WritingStudio() {
             {/* Project / Series Badge in Preview */}
             {project && (
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200/80 text-[11px] font-mono text-amber-800 mb-3">
-                <FolderGit2 className="w-3.5 h-3.5 text-amber-600" />
+                <FileText className="w-3.5 h-3.5 text-amber-600" />
                 <span>
                   Part of series: <strong>{project}</strong>
                   {seriesOrder ? ` (Part ${seriesOrder})` : ''}
@@ -437,7 +437,7 @@ export default function WritingStudio() {
               {/* Project / Series Selector */}
               <div className="pt-2 pb-1 border-t border-neutral-100 flex flex-wrap items-center gap-2.5 text-xs font-mono">
                 <div className="flex items-center gap-1.5 text-neutral-500">
-                  <FolderGit2 className="w-3.5 h-3.5 text-amber-600" />
+                  <FileText className="w-3.5 h-3.5 text-amber-600" />
                   <span className="font-medium text-[11.5px]">Group / Series:</span>
                 </div>
 

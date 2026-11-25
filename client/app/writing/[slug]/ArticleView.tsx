@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Calendar, Hash, FolderGit2 } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Hash, FileText } from 'lucide-react';
 
 export interface BlogPostData {
   _id?: string;
@@ -344,7 +344,7 @@ export default function ArticleView({ slug }: { slug: string }) {
         <header className="mb-6">
           {post.project && (
             <div className="mb-3.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50/90 border border-amber-200/70 text-[11px] font-mono text-amber-900">
-              <FolderGit2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <FileText className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <span>
                 Part of series:{' '}
                 <Link

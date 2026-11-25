@@ -8,6 +8,7 @@ import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
 import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
 import { ArrowUpRight, ArrowRight, PenLine, User, FileText, FolderGit2 } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, PenLine, User, FileText } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -335,215 +336,229 @@ export default function Home() {
               .filter((item) => !['email', 'gmail', 'mail'].includes(item.platform.toLowerCase()))
               .map((item) => (
                 <a
-                key={item.platform}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
-              >
-                <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
-                <span>{item.platform}</span>
-              </a>
-            ))}
-            <a
-              href={profile.resumeUrl || profile.cvUrl || '/Resume'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
-            >
-              <FileText className="w-3.5 h-3.5 text-neutral-700" />
-              <span>Resume</span>
-            </a>
-          </div>
-        </section>
-
-        {/* SECTION 1: PROJECTS */}
-        <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
-            PROJECTS
-          </h2>
-
-          <div className="space-y-4">
-            {projects.map((project, idx) => (
-              <div
-                key={project._id || idx}
-                className="space-y-2.5"
-              >
-                {/* Title & Source Code Link Below */}
-                <div>
-                  <h3 className="text-[13.5px] font-mono font-semibold text-neutral-900">
-                    {project.title}
-                  </h3>
-
-                  {project.sourceCode && (
-                    <div className="mt-1">
-                      <a
-                        href={project.sourceCode}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-neutral-500 hover:text-neutral-900 text-[11.5px] font-mono transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
-                      >
-                        <span>source code: {project.sourceCode}</span>
-                        <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                {/* Tech Stack Tags */}
-                {project.tags && project.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-0.5">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[10.5px] font-mono px-2 py-[1.5px] leading-tight rounded-md bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Bullet Points */}
-                {project.bullets && project.bullets.length > 0 && (
-                  <div className="pt-1.5">
-                    <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
-                      {project.bullets.map((bullet, bIdx) => (
-                        <li key={bIdx} className="flex items-start gap-2">
-                          <span className="text-amber-500 font-bold select-none shrink-0 leading-5">▹</span>
-                          <span className="flex-1">{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SECTION 2: WRITING */}
-        <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
-            WRITING
-          </h2>
-
-          <div className="space-y-3">
-            {posts.map((post, idx) => {
-              const postSlug = post.slug || (idx === 0
-                ? 'designing-scalable-distributed-systems-nodejs-mongodb'
-                : idx === 1
-                ? 'fullstack-architecture-nextjs-express'
-                : 'building-microservices-without-over-engineering');
-
-              return (
-                <Link
-                  key={post._id || post.slug || idx}
-                  href={`/writing/${postSlug}`}
-                  className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
+                  key={item.platform}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
-                      <span>{post.date}</span>
-                      <span>•</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-800 group-hover:translate-x-0.5 transition" />
-                  </div>
+                  <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
+                  <span>{item.platform}</span>
+                </a>
+              ))}
+            key={item.platform}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
+                >
+            <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
+            <span>{item.platform}</span>
+          </a>
+              ))}
+          <a
+            href={profile.resumeUrl || profile.cvUrl || '/Resume'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
+          >
+            <FileText className="w-3.5 h-3.5 text-neutral-700" />
+            <span>Resume</span>
+          </a>
+      </div>
+    </section>
 
-                  <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition leading-snug mb-1">
-                    {post.title}
-                  </h3>
+        {/* SECTION 1: PROJECTS */ }
+  <section className="mb-12">
+    <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+      PROJECTS
+    </h2>
 
-                  <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
-                    {post.description}
-                  </p>
+    <div className="space-y-4">
+      {projects.map((project, idx) => (
+        <div
+          key={project._id || idx}
+          className="space-y-2.5"
+        >
+          {/* Title & Source Code Link Below */}
+          <div>
+            <h3 className="text-[13.5px] font-mono font-semibold text-neutral-900">
+              {project.title}
+            </h3>
 
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-neutral-100">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] font-mono px-1.5 py-[1px] leading-tight rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
-            <Link
-              href="/writing"
-              className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-600 hover:text-neutral-900 border-b border-neutral-300 hover:border-neutral-900 pb-0.5 transition group"
-            >
-              <span>View all writings & project series ({posts.length})</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </section>
-
-        {/* SECTION 3: TECH STACK */}
-        <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
-            TECH STACK
-          </h2>
-
-          <div className="flex flex-wrap gap-1.5">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors"
-              >
-                <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
-                <span>{tech.name}</span>
+            {project.sourceCode && (
+              <div className="mt-1">
+                <a
+                  href={project.sourceCode}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-neutral-500 hover:text-neutral-900 text-[11.5px] font-mono transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
+                >
+                  <span>source code: {project.sourceCode}</span>
+                  <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
+                </a>
               </div>
+            )}
+          </div>
+
+          {/* Tech Stack Tags */}
+          {project.tags && project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {project.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[10.5px] font-mono px-2 py-[1.5px] leading-tight rounded-md bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Bullet Points */}
+          {project.bullets && project.bullets.length > 0 && (
+            <div className="pt-1.5">
+              <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
+                {project.bullets.map((bullet, bIdx) => (
+                  <li key={bIdx} className="flex items-start gap-2">
+                    <span className="text-amber-500 font-bold select-none shrink-0 leading-5">▹</span>
+                    <span className="flex-1">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* SECTION 2: WRITING */ }
+  <section className="mb-12">
+    <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+      WRITING
+      WRITING
+    </h2>
+
+    <div className="space-y-3">
+      {posts.map((post, idx) => {
+        const postSlug = post.slug || (idx === 0
+          ? 'designing-scalable-distributed-systems-nodejs-mongodb'
+          : idx === 1
+            ? 'fullstack-architecture-nextjs-express'
+            : 'building-microservices-without-over-engineering');
+                  ? 'fullstack-architecture-nextjs-express'
+        : 'building-microservices-without-over-engineering');
+
+      return (
+      <Link
+        key={post._id || post.slug || idx}
+        href={`/writing/${postSlug}`}
+        className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
+      >
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
+            <span>{post.date}</span>
+            <span>•</span>
+            <span>{post.readTime}</span>
+          </div>
+          <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-800 group-hover:translate-x-0.5 transition" />
+        </div>
+
+        <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition leading-snug mb-1">
+          {post.title}
+        </h3>
+
+        <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
+          {post.description}
+        </p>
+
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-neutral-100">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono px-1.5 py-[1px] leading-tight rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
+              >
+                #{tag}
+              </span>
             ))}
           </div>
-        </section>
+        )}
+      </Link>
+      );
+            })}
+    </div>
 
-        {/* SECTION 4: GET IN TOUCH */}
-        <section className="mb-14">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
-            GET IN TOUCH
-          </h2>
-          <div className="space-y-1 text-xs font-mono text-neutral-700">
-            <p>
-              Connect via{' '}
-              <a
-                href={`mailto:${profile.email}`}
-                className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
-              >
-                {profile.email}
-              </a>
-            </p>
-            <p>
-              Or via{' '}
-              <a
-                href="https://www.linkedin.com/in/shefin-kp/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
-              >
-                LinkedIn
-              </a>
-            </p>
-          </div>
-        </section>
-      </div>
+    <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
+      <Link
+        href="/writing"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-600 hover:text-neutral-900 border-b border-neutral-300 hover:border-neutral-900 pb-0.5 transition group"
+      >
+        <span>View all writings & project series ({posts.length})</span>
+        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+      </Link>
+    </div>
+  </section>
 
-      {/* MongoDB Management Drawer */}
-      <AdminDrawer
-        isOpen={isAdminDrawerOpen}
-        onClose={() => setIsAdminDrawerOpen(false)}
-        onDataRefresh={fetchData}
-        available={profile.available}
-        onToggleAvailability={handleToggleAvailability}
-      />
-    </main>
+  {/* SECTION 3: TECH STACK */ }
+  <section className="mb-12">
+    <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+      TECH STACK
+    </h2>
+
+    <div className="flex flex-wrap gap-1.5">
+      {techStack.map((tech) => (
+        <div
+          key={tech.name}
+          className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors"
+        >
+          <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
+          <span>{tech.name}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* SECTION 4: GET IN TOUCH */ }
+  <section className="mb-14">
+    <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+      GET IN TOUCH
+    </h2>
+    <div className="space-y-1 text-xs font-mono text-neutral-700">
+      <p>
+        Connect via{' '}
+        <a
+          href={`mailto:${profile.email}`}
+          className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
+        >
+          {profile.email}
+        </a>
+      </p>
+      <p>
+        Or via{' '}
+        <a
+          href="https://www.linkedin.com/in/shefin-kp/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
+        >
+          LinkedIn
+        </a>
+      </p>
+    </div>
+  </section>
+      </div >
+
+    {/* MongoDB Management Drawer */ }
+    < AdminDrawer
+  isOpen = { isAdminDrawerOpen }
+  onClose = {() => setIsAdminDrawerOpen(false)
+}
+onDataRefresh = { fetchData }
+available = { profile.available }
+onToggleAvailability = { handleToggleAvailability }
+  />
+    </main >
   );
 }
