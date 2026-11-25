@@ -4,6 +4,8 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const Profile = require('./models/Profile');
@@ -11,11 +13,29 @@ const Project = require('./models/Project');
 const TechStack = require('./models/TechStack');
 const ContactMessage = require('./models/ContactMessage');
 const Post = require('./models/Post');
+const Admin = require('./models/Admin');
 const { seedDatabase, initialProfile, initialTechStack, initialProjects, initialPosts } = require('./seedData');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/shefin_portfolio';
+const JWT_SECRET = process.env.JWT_SECRET || 'shefin_secret_jwt_key_2026_super_secure';
+
+// Auth verification middleware
+const verifyAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Admin authentication token required' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+  }
+};
 
 // Ensure uploads folder exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -66,8 +86,64 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Auth endpoints
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { emailOrUsername, password } = req.body;
+    if (!emailOrUsername || !password) {
+      return res.status(400).json({ error: 'Email/username and password are required' });
+    }
+
+    const cleanInput = emailOrUsername.trim();
+    const admin = await Admin.findOne({
+      $or: [
+        { email: cleanInput.toLowerCase() },
+        { username: cleanInput }
+      ]
+    });
+
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid email/username or password' });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email/username or password' });
+    }
+
+    const token = jwt.sign(
+      { id: admin._id, email: admin.email, username: admin.username, role: admin.role },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      admin: {
+        id: admin._id,
+        email: admin.email,
+        username: admin.username,
+        role: admin.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/auth/me', verifyAdmin, async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.admin.id).select('-password');
+    if (!admin) return res.status(404).json({ error: 'Admin not found' });
+    res.json({ authenticated: true, admin });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // File upload endpoint for images, gifs, and videos
-app.post('/api/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', verifyAdmin, upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -98,7 +174,7 @@ app.get('/api/profile', async (req, res) => {
   }
 });
 
-app.put('/api/profile', async (req, res) => {
+app.put('/api/profile', verifyAdmin, async (req, res) => {
   try {
     let profile = await Profile.findOne();
     if (!profile) {
@@ -126,7 +202,7 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/api/projects', verifyAdmin, async (req, res) => {
   try {
     const project = new Project(req.body);
     await project.save();
@@ -136,7 +212,7 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-app.put('/api/projects/:id', async (req, res) => {
+app.put('/api/projects/:id', verifyAdmin, async (req, res) => {
   try {
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!project) return res.status(404).json({ error: 'Project not found' });
@@ -146,7 +222,7 @@ app.put('/api/projects/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete('/api/projects/:id', verifyAdmin, async (req, res) => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
@@ -169,7 +245,7 @@ app.get('/api/tech-stack', async (req, res) => {
   }
 });
 
-app.put('/api/tech-stack', async (req, res) => {
+app.put('/api/tech-stack', verifyAdmin, async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
       await TechStack.deleteMany({});
@@ -276,7 +352,7 @@ async function generateUniqueSlug(baseText, existingPostId = null) {
   }
 }
 
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', verifyAdmin, async (req, res) => {
   try {
     const postData = { ...req.body };
     const sourceForSlug = postData.slug || postData.title || 'untitled';
@@ -301,7 +377,7 @@ app.post('/api/posts', async (req, res) => {
   }
 });
 
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', verifyAdmin, async (req, res) => {
   try {
     const updateData = { ...req.body };
     if (updateData.slug || updateData.title) {
@@ -316,7 +392,7 @@ app.put('/api/posts/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', verifyAdmin, async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
@@ -326,8 +402,8 @@ app.delete('/api/posts/:id', async (req, res) => {
   }
 });
 
-// 7. Reset/Re-seed endpoint
-app.post('/api/seed', async (req, res) => {
+// 7. Reset/Re-seed endpoint (Admin Protected)
+app.post('/api/seed', verifyAdmin, async (req, res) => {
   try {
     await Profile.deleteMany({});
     await Project.deleteMany({});

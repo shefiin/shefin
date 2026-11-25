@@ -16,8 +16,18 @@ import {
   Save,
   AlertCircle,
   X,
-  Sparkles
+  Lock,
+  LogOut,
+  ShieldCheck,
+  KeyRound
 } from 'lucide-react';
+import {
+  getAuthHeaders,
+  setAdminAuth,
+  clearAdminAuth,
+  verifyCurrentAuth,
+  AdminUser
+} from '../utils/auth';
 
 // Dynamically import BlockNote with SSR disabled (standard Next.js pattern for block editors)
 const BlockNoteEditor = dynamic(
@@ -36,6 +46,15 @@ export default function WritingStudio() {
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('slug') || searchParams.get('id');
 
+  // Auth State
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [loginEmail, setLoginEmail] = useState('shefinptr@gmail.com');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Article State
   const [postId, setPostId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -49,6 +68,54 @@ export default function WritingStudio() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
+
+  // Verify auth on mount
+  useEffect(() => {
+    async function checkAuth() {
+      const { authenticated, admin } = await verifyCurrentAuth();
+      if (authenticated && admin) {
+        setAdminUser(admin);
+      }
+      setAuthChecking(false);
+    }
+    checkAuth();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError(null);
+
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emailOrUsername: loginEmail,
+          password: loginPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Invalid credentials');
+      }
+
+      setAdminAuth(data.token, data.admin);
+      setAdminUser(data.admin);
+      setLoginPassword('');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      setLoginError(msg);
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    clearAdminAuth();
+    setAdminUser(null);
+  };
 
   // Auto-slug generator from title
   const generateSlug = (text: string) => {
@@ -77,7 +144,7 @@ export default function WritingStudio() {
             setReadTime(data.readTime || '4 min read');
           }
         })
-        .catch(() => { })
+        .catch(() => {})
         .finally(() => setInitialLoading(false));
     }
   }, [editSlug]);
@@ -90,7 +157,6 @@ export default function WritingStudio() {
 
   const handleContentChange = (markdown: string, _html: string, text: string) => {
     setContent(markdown);
-    // Auto calculate read time based on word count
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     const minutes = Math.max(1, Math.ceil(words / 200));
     setReadTime(`${minutes} min read`);
@@ -112,6 +178,11 @@ export default function WritingStudio() {
   };
 
   const handlePublish = async () => {
+    if (!adminUser) {
+      setErrorMessage('Admin login required to publish or update articles.');
+      return;
+    }
+
     if (!title.trim()) {
       setErrorMessage('Please provide an article title.');
       return;
@@ -123,7 +194,7 @@ export default function WritingStudio() {
 
     const finalSlug = slug.trim() || generateSlug(title);
     if (!finalSlug) {
-      setErrorMessage('Please provide an article title.');
+      setErrorMessage('Please enter an article title.');
       return;
     }
 
@@ -149,11 +220,19 @@ export default function WritingStudio() {
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify(postPayload),
       });
 
       if (!res.ok) {
+        if (res.status === 401) {
+          clearAdminAuth();
+          setAdminUser(null);
+          throw new Error('Your admin session expired. Please log in again.');
+        }
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to save post to MongoDB');
       }
@@ -172,11 +251,11 @@ export default function WritingStudio() {
     }
   };
 
-  if (initialLoading) {
+  if (authChecking || initialLoading) {
     return (
       <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
         <p className="font-mono text-xs text-neutral-400 animate-pulse">
-          Loading article from MongoDB...
+          Connecting to Shefin Portfolio...
         </p>
       </div>
     );
@@ -205,27 +284,51 @@ export default function WritingStudio() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setPreviewMode(!previewMode)}
-              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border ${previewMode
-                ? 'bg-neutral-100 text-neutral-900 border-neutral-300 font-semibold'
-                : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
-                }`}
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span>{previewMode ? 'Edit Mode' : 'Preview'}</span>
-            </button>
+            {adminUser ? (
+              <>
+                <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 border border-emerald-200/70 text-[11px] font-mono text-emerald-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>{adminUser.email}</span>
+                </div>
 
-            <button
-              type="button"
-              onClick={handlePublish}
-              disabled={isPublishing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-neutral-900 hover:bg-neutral-800 text-white transition disabled:opacity-50 shadow-xs"
-            >
-              <Save className="w-3.5 h-3.5 text-amber-400" />
-              <span>{isPublishing ? 'Publishing...' : postId ? 'Update Post' : 'Publish Article'}</span>
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode(!previewMode)}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border ${
+                    previewMode
+                      ? 'bg-neutral-100 text-neutral-900 border-neutral-300 font-semibold'
+                      : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{previewMode ? 'Edit Mode' : 'Preview'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePublish}
+                  disabled={isPublishing}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-neutral-900 hover:bg-neutral-800 text-white transition disabled:opacity-50 shadow-xs"
+                >
+                  <Save className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{isPublishing ? 'Publishing...' : postId ? 'Update Post' : 'Publish Article'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  title="Sign Out as Admin"
+                  className="p-1.5 text-neutral-400 hover:text-neutral-800 rounded-lg hover:bg-neutral-100 transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </>
+            ) : (
+              <span className="text-xs font-mono text-neutral-400 flex items-center gap-1">
+                <Lock className="w-3 h-3 text-amber-600" />
+                <span>Locked</span>
+              </span>
+            )}
           </div>
         </div>
       </header>
@@ -265,7 +368,68 @@ export default function WritingStudio() {
 
       {/* Main Container */}
       <main className="max-w-[840px] mx-auto px-4 sm:px-6 pt-8 pb-24">
-        {previewMode ? (
+        {!adminUser ? (
+          /* ADMIN LOGIN GATE */
+          <div className="max-w-md mx-auto my-12 p-6 sm:p-8 rounded-2xl border border-neutral-200/90 bg-white shadow-sm">
+            <div className="text-center mb-6">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center mx-auto mb-3 border border-amber-300/40">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h2 className="text-base font-sans font-bold text-neutral-900 tracking-tight">
+                Admin Authentication Required
+              </h2>
+              <p className="text-xs font-mono text-neutral-500 mt-1">
+                Sign in to create, edit, or publish engineering articles.
+              </p>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-mono flex items-center gap-2">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono text-neutral-600 mb-1">
+                  Admin Email or Username
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="shefinptr@gmail.com"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-neutral-600 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50 shadow-xs flex items-center justify-center gap-2"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+                <span>{loginLoading ? 'Authenticating...' : 'Sign In as Admin'}</span>
+              </button>
+            </form>
+          </div>
+        ) : previewMode ? (
           /* PREVIEW MODE */
           <div className="max-w-[620px] mx-auto">
             <div className="p-2 mb-6 rounded-lg bg-amber-50/80 border border-amber-200/60 text-[11px] font-mono text-amber-800 flex items-center justify-between">

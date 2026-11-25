@@ -5,6 +5,7 @@ import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
+import { getAuthHeaders } from '../utils/auth';
 
 interface BlockNoteEditorProps {
   initialContent?: string;
@@ -22,6 +23,9 @@ export default function BlockNoteEditorComponent({
 
     const res = await fetch('http://localhost:5001/api/upload', {
       method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+      },
       body: formData,
     });
 

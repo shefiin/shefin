@@ -2,19 +2,31 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { X, Database, RefreshCw, Plus, CheckCircle, Mail, Globe, Server, Check, BookOpen, Trash2, Edit3, PenLine } from 'lucide-react';
-
-interface Project {
-  _id?: string;
-  title: string;
-  description: string;
-  status: string;
-  iconKey: string;
-  link?: string;
-  sourceCode?: string;
-  tags?: string[];
-  bullets?: string[];
-}
+import {
+  X,
+  Database,
+  RefreshCw,
+  Plus,
+  CheckCircle,
+  Mail,
+  Server,
+  BookOpen,
+  Trash2,
+  Edit3,
+  PenLine,
+  Lock,
+  LogOut,
+  ShieldCheck,
+  KeyRound,
+  AlertCircle
+} from 'lucide-react';
+import {
+  getAuthHeaders,
+  setAdminAuth,
+  clearAdminAuth,
+  verifyCurrentAuth,
+  AdminUser
+} from '../utils/auth';
 
 interface BlogPost {
   _id?: string;
@@ -51,6 +63,15 @@ export function AdminDrawer({
   available,
   onToggleAvailability
 }: AdminDrawerProps) {
+  // Auth state
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [loginEmail, setLoginEmail] = useState('shefinptr@gmail.com');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Tab & data state
   const [activeTab, setActiveTab] = useState<'messages' | 'projects' | 'posts' | 'status'>('messages');
   const [messages, setMessages] = useState<Message[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -72,19 +93,79 @@ export function AdminDrawer({
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostDesc, setNewPostDesc] = useState('');
   const [newPostTags, setNewPostTags] = useState('');
-  const [newPostLink, setNewPostLink] = useState('https://substack.com/@shefin204168');
   const [newPostReadTime, setNewPostReadTime] = useState('5 min read');
   const [submittingPost, setSubmittingPost] = useState(false);
 
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
+  // Verify auth & fetch health when drawer opens
   useEffect(() => {
     if (isOpen) {
-      fetchHealth();
-      fetchMessages();
-      fetchPosts();
+      checkAuthAndLoad();
     }
   }, [isOpen]);
+
+  const checkAuthAndLoad = async () => {
+    setAuthChecking(true);
+    fetchHealth();
+    try {
+      const { authenticated, admin } = await verifyCurrentAuth();
+      if (authenticated && admin) {
+        setAdminUser(admin);
+        fetchMessages();
+        fetchPosts();
+      } else {
+        setAdminUser(null);
+      }
+    } catch {
+      setAdminUser(null);
+    } finally {
+      setAuthChecking(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError(null);
+
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emailOrUsername: loginEmail,
+          password: loginPassword
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Login failed. Please check credentials.');
+      }
+
+      setAdminAuth(data.token, data.admin);
+      setAdminUser(data.admin);
+      setLoginPassword('');
+      fetchMessages();
+      fetchPosts();
+      setActionNotice(`Signed in as ${data.admin.email}`);
+      setTimeout(() => setActionNotice(null), 3000);
+    } catch (err: any) {
+      setLoginError(err.message || 'Authentication error');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    clearAdminAuth();
+    setAdminUser(null);
+    setMessages([]);
+    setPosts([]);
+    setActionNotice('Signed out from Admin session');
+    setTimeout(() => setActionNotice(null), 3000);
+  };
 
   const fetchHealth = async () => {
     try {
@@ -136,7 +217,10 @@ export function AdminDrawer({
 
       const res = await fetch('http://localhost:5001/api/projects', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify({
           title: newTitle,
           description: newDesc,
@@ -147,6 +231,13 @@ export function AdminDrawer({
           tags: tagsArray
         })
       });
+
+      if (res.status === 401) {
+        handleLogout();
+        setLoginError('Session expired or unauthorized. Please sign in again.');
+        return;
+      }
+
       if (res.ok) {
         setNewTitle('');
         setNewDesc('');
@@ -181,7 +272,10 @@ export function AdminDrawer({
 
       const res = await fetch('http://localhost:5001/api/posts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify({
           title: newPostTitle,
           slug: generatedSlug,
@@ -191,6 +285,13 @@ export function AdminDrawer({
           date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
         })
       });
+
+      if (res.status === 401) {
+        handleLogout();
+        setLoginError('Session expired or unauthorized. Please sign in again.');
+        return;
+      }
+
       if (res.ok) {
         setNewPostTitle('');
         setNewPostDesc('');
@@ -211,8 +312,18 @@ export function AdminDrawer({
     if (!confirm('Delete this blog post from MongoDB?')) return;
     try {
       const res = await fetch(`http://localhost:5001/api/posts/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          ...getAuthHeaders()
+        }
       });
+
+      if (res.status === 401) {
+        handleLogout();
+        setLoginError('Session expired or unauthorized. Please sign in again.');
+        return;
+      }
+
       if (res.ok) {
         setActionNotice('Blog post deleted!');
         setTimeout(() => setActionNotice(null), 3000);
@@ -225,13 +336,26 @@ export function AdminDrawer({
   };
 
   const handleResetSeed = async () => {
-    if (!confirm('Re-seed the database back to original portfolio defaults?')) return;
+    if (!confirm('Re-seed the database back to original portfolio defaults? This requires Admin authentication.')) return;
     try {
-      const res = await fetch('http://localhost:5001/api/seed', { method: 'POST' });
+      const res = await fetch('http://localhost:5001/api/seed', {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders()
+        }
+      });
+
+      if (res.status === 401) {
+        handleLogout();
+        setLoginError('Session expired or unauthorized. Please sign in again.');
+        return;
+      }
+
       if (res.ok) {
         setActionNotice('Database re-seeded with initial portfolio data!');
         setTimeout(() => setActionNotice(null), 3000);
         fetchMessages();
+        fetchPosts();
         onDataRefresh();
       }
     } catch (err) {
@@ -250,27 +374,57 @@ export function AdminDrawer({
         {/* Header */}
         <div className="p-4 border-b border-neutral-200 flex items-center justify-between bg-neutral-50/50">
           <div className="flex items-center gap-2">
-            <Database className="w-4 h-4 text-emerald-600" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-700">
+              <Database className="w-4 h-4" />
+            </div>
             <div>
-              <h2 className="text-sm font-semibold text-neutral-900 font-sans">
-                MongoDB & Express Control Panel
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-neutral-900 font-sans">
+                  MongoDB & Express Panel
+                </h2>
+                {adminUser && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                    Admin
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500">
                 <span className="flex items-center gap-1">
                   <span className={`w-1.5 h-1.5 rounded-full ${health?.mongoConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                  {health?.mongoConnected ? 'Mongo: Connected' : 'Mongo: Connecting'}
+                  {health?.mongoConnected ? 'Connected' : 'Connecting'}
                 </span>
                 <span>•</span>
                 <span>Port 5001</span>
+                {adminUser && (
+                  <>
+                    <span>•</span>
+                    <span className="text-neutral-700 truncate max-w-[120px]">{adminUser.email}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-neutral-200 text-neutral-500 transition"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-1">
+            {adminUser && (
+              <button
+                onClick={handleLogout}
+                title="Sign out of Admin session"
+                className="px-2.5 py-1 text-xs font-mono text-neutral-500 hover:text-red-600 hover:bg-neutral-100 rounded-lg flex items-center gap-1 transition"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            )}
+            <button 
+              onClick={onClose}
+              className="p-1 rounded-full hover:bg-neutral-200 text-neutral-500 transition"
+              title="Close panel"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Action notice */}
@@ -281,469 +435,562 @@ export function AdminDrawer({
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex border-b border-neutral-200 bg-white">
-          <button
-            onClick={() => setActiveTab('messages')}
-            className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
-              activeTab === 'messages'
-                ? 'border-neutral-900 text-neutral-900'
-                : 'border-transparent text-neutral-500 hover:text-neutral-800'
-            }`}
-          >
-            <Mail className="w-3.5 h-3.5" />
-            <span>Messages ({messages.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('projects')}
-            className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
-              activeTab === 'projects'
-                ? 'border-neutral-900 text-neutral-900'
-                : 'border-transparent text-neutral-500 hover:text-neutral-800'
-            }`}
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Project</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('posts')}
-            className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
-              activeTab === 'posts'
-                ? 'border-neutral-900 text-neutral-900'
-                : 'border-transparent text-neutral-500 hover:text-neutral-800'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Blog ({posts.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('status')}
-            className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
-              activeTab === 'status'
-                ? 'border-neutral-900 text-neutral-900'
-                : 'border-transparent text-neutral-500 hover:text-neutral-800'
-            }`}
-          >
-            <Server className="w-3.5 h-3.5" />
-            <span>Settings</span>
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {activeTab === 'messages' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-neutral-500">
-                  Inbox in MongoDB (`contactmessages`)
-                </span>
-                <button
-                  onClick={fetchMessages}
-                  className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 flex items-center gap-1"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Refresh
-                </button>
+        {/* Auth checking loader */}
+        {authChecking ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-neutral-400">
+            <RefreshCw className="w-5 h-5 animate-spin mb-2 text-neutral-500" />
+            <p className="text-xs font-mono">Checking admin authentication...</p>
+          </div>
+        ) : !adminUser ? (
+          /* Admin Login Gate */
+          <div className="flex-1 flex flex-col justify-center p-6 sm:p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center text-neutral-800 mx-auto border border-neutral-200">
+                <Lock className="w-6 h-6" />
               </div>
-
-              {loadingMessages ? (
-                <div className="text-center py-8 text-xs font-mono text-neutral-400">
-                  Loading messages from MongoDB...
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-neutral-200 rounded-xl p-6">
-                  <Mail className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-                  <p className="text-xs font-mono text-neutral-600">
-                    No messages yet in MongoDB.
-                  </p>
-                  <p className="text-[11px] font-mono text-neutral-400 mt-1">
-                    Click &apos;Send an email&apos; or press &apos;E&apos; on the portfolio to send one!
-                  </p>
-                </div>
-              ) : (
-                messages.map((m) => (
-                  <div key={m._id} className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/60 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-neutral-900 font-sans">
-                        {m.name}
-                      </span>
-                      <span className="text-[10px] font-mono text-neutral-400">
-                        {new Date(m.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="text-[11px] font-mono text-neutral-500">
-                      {m.email}
-                    </div>
-                    <p className="text-xs font-mono text-neutral-700 bg-white p-2.5 rounded-lg border border-neutral-200/80 mt-1">
-                      {m.message}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {activeTab === 'projects' && (
-            <form onSubmit={handleAddProject} className="space-y-3">
-              <p className="text-xs font-mono text-neutral-500">
-                Add a new project document directly to MongoDB collection:
+              <h3 className="text-base font-semibold text-neutral-900 font-sans">
+                Admin Authentication Required
+              </h3>
+              <p className="text-xs font-mono text-neutral-500 max-w-sm mx-auto">
+                Sign in to manage projects, blog posts, inbox messages, and database records.
               </p>
+            </div>
 
+            {loginError && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-mono text-red-700 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto w-full">
               <div>
                 <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Project Title
+                  Admin Email / Username
                 </label>
                 <input
                   type="text"
                   required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. AI Workflow Engine"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="shefinptr@gmail.com"
                   className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Description
+                  Password
                 </label>
-                <textarea
+                <input
+                  type="password"
                   required
-                  rows={3}
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Brief description of the product or system..."
-                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-mono text-neutral-600 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                    className="w-full px-2.5 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Sold">Sold</option>
-                    <option value="Building">Building</option>
-                    <option value="Beta">Beta</option>
-                    <option value="Open Source">Open Source</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-mono text-neutral-600 mb-1">
-                    Icon
-                  </label>
-                  <select
-                    value={newIcon}
-                    onChange={(e) => setNewIcon(e.target.value)}
-                    className="w-full px-2.5 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white"
-                  >
-                    <option value="curehome">Activity / Telehealth</option>
-                    <option value="mic">Mic / Audio</option>
-                    <option value="cat">Cat / Mascot</option>
-                    <option value="bluesky">Bluesky Butterfly</option>
-                    <option value="database">Database</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Source Code URL (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={newSourceCode}
-                  onChange={(e) => setNewSourceCode(e.target.value)}
-                  placeholder="https://github.com/..."
-                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Tech Stack Tags (Comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={newTags}
-                  onChange={(e) => setNewTags(e.target.value)}
-                  placeholder="typescript, react, gRPC, nats, docker sandbox..."
-                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Project Link (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={newLink}
-                  onChange={(e) => setNewLink(e.target.value)}
-                  placeholder="https://..."
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
                   className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={submittingProject}
-                className="w-full mt-2 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
+                disabled={loginLoading}
+                className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-xs"
               >
-                {submittingProject ? 'Writing to MongoDB...' : '+ Save Project to MongoDB'}
+                {loginLoading ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Verifying Credentials...</span>
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="w-3.5 h-3.5" />
+                    <span>Unlock Admin Panel</span>
+                  </>
+                )}
               </button>
             </form>
-          )}
 
-          {activeTab === 'posts' && (
-            <div className="space-y-4">
-              {/* Dedicated Writing Studio Promo Card */}
-              <Link
-                href="/write"
-                onClick={onClose}
-                className="flex items-center justify-between p-3.5 rounded-xl border border-amber-300/80 bg-gradient-to-r from-amber-50/70 to-orange-50/70 hover:from-amber-100/70 hover:to-orange-100/70 transition group shadow-2xs"
+            <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50 text-[11px] font-mono text-neutral-500 max-w-sm mx-auto w-full space-y-1">
+              <div className="font-semibold text-neutral-700">Seeded Credentials:</div>
+              <div>• Email: <code className="bg-white px-1 py-0.5 rounded border border-neutral-200 text-neutral-800">shefinptr@gmail.com</code></div>
+              <div>• Password: <code className="bg-white px-1 py-0.5 rounded border border-neutral-200 text-neutral-800">admin123</code></div>
+            </div>
+          </div>
+        ) : (
+          /* Authenticated Admin Views */
+          <>
+            {/* Tabs */}
+            <div className="flex border-b border-neutral-200 bg-white">
+              <button
+                onClick={() => setActiveTab('messages')}
+                className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'messages'
+                    ? 'border-neutral-900 text-neutral-900'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-800'
+                }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-700">
-                    <PenLine className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-800 transition">
-                      Open Writing Studio
-                    </p>
-                    <p className="text-[10.5px] font-mono text-neutral-500">
-                      Medium/Notion-style rich editor with live formatting
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-mono text-amber-700 font-semibold group-hover:translate-x-0.5 transition-transform">
-                  Launch →
-                </span>
-              </Link>
+                <Mail className="w-3.5 h-3.5" />
+                <span>Messages ({messages.length})</span>
+              </button>
 
-              <form onSubmit={handleAddPost} className="space-y-3 p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50">
-                <p className="text-xs font-mono text-neutral-700 font-semibold">
-                  Quick Publish to MongoDB
-                </p>
+              <button
+                onClick={() => setActiveTab('projects')}
+                className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'projects'
+                    ? 'border-neutral-900 text-neutral-900'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-800'
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Project</span>
+              </button>
 
-                <div>
-                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
-                    Post Title
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newPostTitle}
-                    onChange={(e) => setNewPostTitle(e.target.value)}
-                    placeholder="e.g. Scaling Database Transactions at High Concurrency"
-                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                  />
-                </div>
+              <button
+                onClick={() => setActiveTab('posts')}
+                className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'posts'
+                    ? 'border-neutral-900 text-neutral-900'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-800'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Blog ({posts.length})</span>
+              </button>
 
-                <div>
-                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
-                    Summary / Description
-                  </label>
-                  <textarea
-                    required
-                    rows={2}
-                    value={newPostDesc}
-                    onChange={(e) => setNewPostDesc(e.target.value)}
-                    placeholder="Brief description or takeaway..."
-                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
-                  />
-                </div>
+              <button
+                onClick={() => setActiveTab('status')}
+                className={`flex-1 py-2.5 text-xs font-mono font-medium transition border-b-2 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'status'
+                    ? 'border-neutral-900 text-neutral-900'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-800'
+                }`}
+              >
+                <Server className="w-3.5 h-3.5" />
+                <span>Settings</span>
+              </button>
+            </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-mono text-neutral-600 mb-1">
-                      Read Time
-                    </label>
-                    <input
-                      type="text"
-                      value={newPostReadTime}
-                      onChange={(e) => setNewPostReadTime(e.target.value)}
-                      placeholder="e.g. 5 min read"
-                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-mono text-neutral-600 mb-1">
-                      Tags (comma-separated)
-                    </label>
-                    <input
-                      type="text"
-                      value={newPostTags}
-                      onChange={(e) => setNewPostTags(e.target.value)}
-                      placeholder="Node.js, Architecture"
-                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submittingPost}
-                  className="w-full mt-1 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
-                >
-                  {submittingPost ? 'Saving...' : '+ Quick Publish'}
-                </button>
-              </form>
-
-              {/* Existing Posts List */}
-              <div className="space-y-2 pt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-neutral-500">
-                    Existing Posts ({posts.length})
-                  </span>
-                  <button
-                    onClick={fetchPosts}
-                    className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 flex items-center gap-1"
-                  >
-                    <RefreshCw className="w-3 h-3" />
-                    Refresh
-                  </button>
-                </div>
-
-                {loadingPosts ? (
-                  <div className="text-center py-4 text-xs font-mono text-neutral-400">
-                    Loading posts...
-                  </div>
-                ) : posts.length === 0 ? (
-                  <div className="text-center py-6 text-xs font-mono text-neutral-400 border border-dashed rounded-xl">
-                    No blog posts yet in MongoDB.
-                  </div>
-                ) : (
-                  posts.map((post) => (
-                    <div
-                      key={post._id || post.title}
-                      className="p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 flex items-start justify-between gap-2"
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {activeTab === 'messages' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-mono text-neutral-500">
+                      Inbox in MongoDB (`contactmessages`)
+                    </span>
+                    <button
+                      onClick={fetchMessages}
+                      className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 flex items-center gap-1"
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400">
-                          <span>{post.date}</span>
-                          <span>•</span>
-                          <span>{post.readTime}</span>
+                      <RefreshCw className="w-3 h-3" />
+                      Refresh
+                    </button>
+                  </div>
+
+                  {loadingMessages ? (
+                    <div className="text-center py-8 text-xs font-mono text-neutral-400">
+                      Loading messages from MongoDB...
+                    </div>
+                  ) : messages.length === 0 ? (
+                    <div className="text-center py-12 border border-dashed border-neutral-200 rounded-xl p-6">
+                      <Mail className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+                      <p className="text-xs font-mono text-neutral-600">
+                        No messages yet in MongoDB.
+                      </p>
+                      <p className="text-[11px] font-mono text-neutral-400 mt-1">
+                        Click &apos;Send an email&apos; or press &apos;E&apos; on the portfolio to send one!
+                      </p>
+                    </div>
+                  ) : (
+                    messages.map((m) => (
+                      <div key={m._id} className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/60 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-neutral-900 font-sans">
+                            {m.name}
+                          </span>
+                          <span className="text-[10px] font-mono text-neutral-400">
+                            {new Date(m.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
-                        <h5 className="text-xs font-mono font-semibold text-neutral-900">
-                          {post.title}
-                        </h5>
-                        <p className="text-[11px] font-mono text-neutral-500 line-clamp-1">
-                          {post.description}
+                        <div className="text-[11px] font-mono text-neutral-500">
+                          {m.email}
+                        </div>
+                        <p className="text-xs font-mono text-neutral-700 bg-white p-2.5 rounded-lg border border-neutral-200/80 mt-1">
+                          {m.message}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <Link
-                          href={`/write?slug=${post.slug || post._id}`}
-                          onClick={onClose}
-                          className="p-1 text-neutral-400 hover:text-amber-700 transition"
-                          title="Edit in Writing Studio"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </Link>
-                        {post._id && (
-                          <button
-                            onClick={() => handleDeletePost(post._id!)}
-                            className="p-1 text-neutral-400 hover:text-red-600 transition"
-                            title="Delete from MongoDB"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                    ))
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'projects' && (
+                <form onSubmit={handleAddProject} className="space-y-3">
+                  <p className="text-xs font-mono text-neutral-500">
+                    Add a new project document directly to MongoDB collection:
+                  </p>
+
+                  <div>
+                    <label className="block text-xs font-mono text-neutral-600 mb-1">
+                      Project Title
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="e.g. AI Workflow Engine"
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-neutral-600 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
+                      placeholder="Brief description of the product or system..."
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-mono text-neutral-600 mb-1">
+                        Status
+                      </label>
+                      <select
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value)}
+                        className="w-full px-2.5 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white"
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Sold">Sold</option>
+                        <option value="Building">Building</option>
+                        <option value="Beta">Beta</option>
+                        <option value="Open Source">Open Source</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono text-neutral-600 mb-1">
+                        Icon
+                      </label>
+                      <select
+                        value={newIcon}
+                        onChange={(e) => setNewIcon(e.target.value)}
+                        className="w-full px-2.5 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white"
+                      >
+                        <option value="curehome">Activity / Telehealth</option>
+                        <option value="mic">Mic / Audio</option>
+                        <option value="cat">Cat / Mascot</option>
+                        <option value="bluesky">Bluesky Butterfly</option>
+                        <option value="database">Database</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-neutral-600 mb-1">
+                      Source Code URL (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newSourceCode}
+                      onChange={(e) => setNewSourceCode(e.target.value)}
+                      placeholder="https://github.com/..."
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-neutral-600 mb-1">
+                      Tech Stack Tags (Comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={newTags}
+                      onChange={(e) => setNewTags(e.target.value)}
+                      placeholder="typescript, react, gRPC, nats, docker sandbox..."
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-neutral-600 mb-1">
+                      Project Link (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newLink}
+                      onChange={(e) => setNewLink(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submittingProject}
+                    className="w-full mt-2 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
+                  >
+                    {submittingProject ? 'Writing to MongoDB...' : '+ Save Project to MongoDB'}
+                  </button>
+                </form>
+              )}
+
+              {activeTab === 'posts' && (
+                <div className="space-y-4">
+                  {/* Dedicated Writing Studio Promo Card */}
+                  <Link
+                    href="/write"
+                    onClick={onClose}
+                    className="flex items-center justify-between p-3.5 rounded-xl border border-amber-300/80 bg-gradient-to-r from-amber-50/70 to-orange-50/70 hover:from-amber-100/70 hover:to-orange-100/70 transition group shadow-2xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-700">
+                        <PenLine className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-800 transition">
+                          Open Writing Studio
+                        </p>
+                        <p className="text-[10.5px] font-mono text-neutral-500">
+                          Medium/Notion-style rich editor with live formatting & media
+                        </p>
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
+                    <span className="text-xs font-mono text-amber-700 font-semibold group-hover:translate-x-0.5 transition-transform">
+                      Launch →
+                    </span>
+                  </Link>
 
-          {activeTab === 'status' && (
-            <div className="space-y-4">
-              <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-2">
-                <h4 className="text-xs font-semibold text-neutral-900 font-sans">
-                  Availability Status
-                </h4>
-                <p className="text-[11px] font-mono text-neutral-500">
-                  Controls the green indicator badge on the portfolio:
-                </p>
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    onClick={() => onToggleAvailability(true)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono border flex items-center gap-1.5 transition ${
-                      available
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-medium'
-                        : 'bg-white text-neutral-600 border-neutral-200'
-                    }`}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-                    Available for new projects
-                  </button>
+                  <form onSubmit={handleAddPost} className="space-y-3 p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50">
+                    <p className="text-xs font-mono text-neutral-700 font-semibold">
+                      Quick Publish to MongoDB
+                    </p>
 
-                  <button
-                    onClick={() => onToggleAvailability(false)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono border flex items-center gap-1.5 transition ${
-                      !available
-                        ? 'bg-neutral-800 text-white border-neutral-800 font-medium'
-                        : 'bg-white text-neutral-600 border-neutral-200'
-                    }`}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-neutral-400 inline-block" />
-                    Busy / In Sprints
-                  </button>
+                    <div>
+                      <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                        Post Title
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newPostTitle}
+                        onChange={(e) => setNewPostTitle(e.target.value)}
+                        placeholder="e.g. Scaling Database Transactions at High Concurrency"
+                        className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                        Summary / Description
+                      </label>
+                      <textarea
+                        required
+                        rows={2}
+                        value={newPostDesc}
+                        onChange={(e) => setNewPostDesc(e.target.value)}
+                        placeholder="Brief description or takeaway..."
+                        className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                          Read Time
+                        </label>
+                        <input
+                          type="text"
+                          value={newPostReadTime}
+                          onChange={(e) => setNewPostReadTime(e.target.value)}
+                          placeholder="e.g. 5 min read"
+                          className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-mono text-neutral-600 mb-1">
+                          Tags (comma-separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={newPostTags}
+                          onChange={(e) => setNewPostTags(e.target.value)}
+                          placeholder="Node.js, Architecture"
+                          className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingPost}
+                      className="w-full mt-1 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
+                    >
+                      {submittingPost ? 'Saving...' : '+ Quick Publish'}
+                    </button>
+                  </form>
+
+                  {/* Existing Posts List */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono text-neutral-500">
+                        Existing Posts ({posts.length})
+                      </span>
+                      <button
+                        onClick={fetchPosts}
+                        className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 flex items-center gap-1"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        Refresh
+                      </button>
+                    </div>
+
+                    {loadingPosts ? (
+                      <div className="text-center py-4 text-xs font-mono text-neutral-400">
+                        Loading posts...
+                      </div>
+                    ) : posts.length === 0 ? (
+                      <div className="text-center py-6 text-xs font-mono text-neutral-400 border border-dashed rounded-xl">
+                        No blog posts yet in MongoDB.
+                      </div>
+                    ) : (
+                      posts.map((post) => (
+                        <div
+                          key={post._id || post.title}
+                          className="p-3 rounded-xl border border-neutral-200 bg-neutral-50/50 flex items-start justify-between gap-2"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400">
+                              <span>{post.date}</span>
+                              <span>•</span>
+                              <span>{post.readTime}</span>
+                            </div>
+                            <h5 className="text-xs font-mono font-semibold text-neutral-900">
+                              {post.title}
+                            </h5>
+                            <p className="text-[11px] font-mono text-neutral-500 line-clamp-1">
+                              {post.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Link
+                              href={`/write?slug=${post.slug || post._id}`}
+                              onClick={onClose}
+                              className="p-1 text-neutral-400 hover:text-amber-700 transition"
+                              title="Edit in Writing Studio"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </Link>
+                            {post._id && (
+                              <button
+                                onClick={() => handleDeletePost(post._id!)}
+                                className="p-1 text-neutral-400 hover:text-red-600 transition"
+                                title="Delete from MongoDB"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-2">
-                <h4 className="text-xs font-semibold text-neutral-900 font-sans">
-                  Database Management
-                </h4>
-                <p className="text-[11px] font-mono text-neutral-500">
-                  Reset collections back to Shefin&apos;s clean default state from the reference design.
-                </p>
-                <button
-                  onClick={handleResetSeed}
-                  className="px-3 py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg text-xs font-mono transition flex items-center gap-1.5"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Re-seed MongoDB Defaults</span>
-                </button>
-              </div>
+              {activeTab === 'status' && (
+                <div className="space-y-4">
+                  <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-2">
+                    <h4 className="text-xs font-semibold text-neutral-900 font-sans">
+                      Availability Status
+                    </h4>
+                    <p className="text-[11px] font-mono text-neutral-500">
+                      Controls the green indicator badge on the portfolio:
+                    </p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        onClick={() => onToggleAvailability(true)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono border flex items-center gap-1.5 transition ${
+                          available
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-medium'
+                            : 'bg-white text-neutral-600 border-neutral-200'
+                        }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                        Available for new projects
+                      </button>
 
-              <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-1.5">
-                <h4 className="text-xs font-semibold text-neutral-900 font-sans">
-                  Architecture Overview
-                </h4>
-                <ul className="text-[11px] font-mono text-neutral-600 space-y-1">
-                  <li>• Frontend: Next.js 16 + Tailwind CSS</li>
-                  <li>• Backend: Express.js (Port 5001)</li>
-                  <li>• Database: MongoDB (`shefin_portfolio`)</li>
-                  <li>• Image: shefin.png</li>
-                </ul>
-              </div>
+                      <button
+                        onClick={() => onToggleAvailability(false)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono border flex items-center gap-1.5 transition ${
+                          !available
+                            ? 'bg-neutral-800 text-white border-neutral-800 font-medium'
+                            : 'bg-white text-neutral-600 border-neutral-200'
+                        }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-neutral-400 inline-block" />
+                        Busy / In Sprints
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-2">
+                    <h4 className="text-xs font-semibold text-neutral-900 font-sans">
+                      Database Management
+                    </h4>
+                    <p className="text-[11px] font-mono text-neutral-500">
+                      Reset collections back to Shefin&apos;s clean default state from the reference design.
+                    </p>
+                    <button
+                      onClick={handleResetSeed}
+                      className="px-3 py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg text-xs font-mono transition flex items-center gap-1.5"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Re-seed MongoDB Defaults</span>
+                    </button>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-1.5">
+                    <h4 className="text-xs font-semibold text-neutral-900 font-sans">
+                      Architecture & Security Overview
+                    </h4>
+                    <ul className="text-[11px] font-mono text-neutral-600 space-y-1">
+                      <li>• Frontend: Next.js 16 + Tailwind CSS</li>
+                      <li>• Backend: Express.js (Port 5001)</li>
+                      <li>• Database: MongoDB (`shefin_portfolio`)</li>
+                      <li>• Auth: JWT Token + bcrypt password hashing</li>
+                      <li>• Admin Account: {adminUser?.email || 'shefinptr@gmail.com'}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* Footer */}
-        <div className="p-3 border-t border-neutral-200 bg-neutral-50 text-center">
+        <div className="p-3 border-t border-neutral-200 bg-neutral-50 text-center flex items-center justify-between px-4">
           <span className="text-[11px] font-mono text-neutral-400">
             MERN Stack Portfolio • Shefin
           </span>
+          {adminUser && (
+            <span className="text-[10.5px] font-mono text-emerald-600 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Authenticated Session
+            </span>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

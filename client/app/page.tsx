@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
+import { getAuthHeaders } from './utils/auth';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 
 interface Project {
@@ -237,7 +238,7 @@ export default function Home() {
     try {
       await fetch('http://localhost:5001/api/profile', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ available: val }),
       });
     } catch (err) {

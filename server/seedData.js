@@ -2,6 +2,8 @@ const Profile = require('./models/Profile');
 const Project = require('./models/Project');
 const TechStack = require('./models/TechStack');
 const Post = require('./models/Post');
+const Admin = require('./models/Admin');
+const bcrypt = require('bcryptjs');
 
 const initialProfile = {
   name: "Shefin",
@@ -211,6 +213,27 @@ async function seedDatabase() {
     await Post.deleteMany({});
     await Post.insertMany(initialPosts);
     console.log(`🌱 Seeded ${initialPosts.length} internal blog posts with full content`);
+
+    // Ensure admin user exists with hashed password
+    const adminEmail = (process.env.ADMIN_EMAIL || 'shefinptr@gmail.com').toLowerCase();
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    let admin = await Admin.findOne({ email: adminEmail });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(adminPassword, salt);
+
+    if (!admin) {
+      admin = await Admin.create({
+        email: adminEmail,
+        username: 'shefin',
+        password: hashedPassword,
+        role: 'admin'
+      });
+      console.log(`🔐 Seeded initial admin account: ${adminEmail}`);
+    } else {
+      admin.password = hashedPassword;
+      await admin.save();
+      console.log(`🔐 Updated admin account credentials: ${adminEmail}`);
+    }
   } catch (error) {
     console.error('Seed error:', error);
   }
