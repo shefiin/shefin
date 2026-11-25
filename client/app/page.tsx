@@ -326,7 +326,7 @@ export default function Home() {
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2.5">
             FIND ME ON
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {profile.socials
               .filter((item) => !['email', 'gmail', 'mail'].includes(item.platform.toLowerCase()))
               .map((item) => (
@@ -335,7 +335,7 @@ export default function Home() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
               >
                 <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
                 <span>{item.platform}</span>
@@ -345,7 +345,7 @@ export default function Home() {
               href={profile.cvUrl || '/cv.pdf'}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
             >
               <FileText className="w-3.5 h-3.5 text-neutral-700" />
               <span>CV</span>
