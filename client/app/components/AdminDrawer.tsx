@@ -12,6 +12,7 @@ interface Project {
   link?: string;
   sourceCode?: string;
   tags?: string[];
+  bullets?: string[];
 }
 
 interface BlogPost {

@@ -17,6 +17,7 @@ interface Project {
   link?: string;
   sourceCode?: string;
   tags?: string[];
+  bullets?: string[];
 }
 
 interface BlogPost {
@@ -100,26 +101,32 @@ const defaultTechStack: TechItem[] = [
 
 const defaultProjects: Project[] = [
   {
-    title: 'CureHome— Telehealth platform',
-    description: 'Telehealth platform with microservices architecture, gRPC inter-service communication, and NATS event-driven messaging.',
+    title: 'CureHome — Telehealth platform',
+    description: 'Production-ready distributed telehealth platform engineered for high availability, secure medical consultations, and real-time clinical workflows.',
     status: 'Active',
     iconKey: 'curehome',
     link: 'https://github.com/shefiin/telehealth',
     sourceCode: 'https://github.com/shefiin/telehealth',
     tags: [
-      'typescript',
+      'Typescript',
       'react',
       'gRPC',
       'nats',
       'docker sandbox',
       'postgres',
-      'PostgreSQL',
+      'mongodb',
       'redis',
       'prometheus',
       'grafana',
       'aws',
       'gcp',
       'kubernetes',
+    ],
+    bullets: [
+      'Architected distributed microservices communicating via gRPC (Protobuf) for sub-millisecond inter-service RPCs and NATS JetStream for asynchronous pub/sub medical event streams and notification pipelines.',
+      'Engineered secure multi-tenant Docker sandboxes with isolated Linux namespaces and resource limits to safely execute automated diagnostic triage algorithms without host contamination.',
+      'Implemented a polyglot persistence tier pairing PostgreSQL for ACID-guaranteed patient health records (EHR) and financial billing with MongoDB for unstructured clinical notes, backed by Redis for sub-10ms session caching and distributed locking.',
+      'Orchestrated containerized deployments via Kubernetes (K8s) across AWS and GCP, instrumenting Prometheus metrics scrapers and Grafana dashboards for real-time latency monitoring, health alerting, and SLO tracking.',
     ],
   },
 ];
@@ -296,10 +303,10 @@ export default function Home() {
               return (
                 <div
                   key={project._id || idx}
-                  className="group border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all shadow-2xs"
+                  className="group border border-neutral-200 rounded-xl p-4 sm:p-5 bg-white hover:border-neutral-300 transition-all shadow-2xs"
                 >
                   {/* Header: [Title] [source code: url] and Status */}
-                  <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                  <div className="flex items-start justify-between gap-3 mb-2.5 flex-wrap">
                     <div className="flex items-center gap-2 flex-wrap text-[13px] font-mono">
                       <div className="flex items-center gap-1.5 font-semibold text-neutral-900 group-hover:text-amber-700 transition">
                         <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
@@ -344,16 +351,9 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Description if present */}
-                  {project.description && (
-                    <p className="text-[12px] font-mono text-neutral-600 leading-relaxed mb-3">
-                      {project.description}
-                    </p>
-                  )}
-
                   {/* Tech Stack Tags */}
                   {project.tags && project.tags.length > 0 && (
-                    <div className="pt-2 border-t border-neutral-100">
+                    <div className="my-3">
                       <div className="flex flex-wrap gap-1.5">
                         {project.tags.map((tag) => (
                           <span
@@ -364,6 +364,20 @@ export default function Home() {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Advanced Bullet Points */}
+                  {project.bullets && project.bullets.length > 0 && (
+                    <div className="pt-3 border-t border-neutral-100">
+                      <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
+                        {project.bullets.map((bullet, bIdx) => (
+                          <li key={bIdx} className="flex items-start gap-2">
+                            <span className="text-amber-500 font-bold select-none shrink-0 leading-5">▹</span>
+                            <span className="flex-1">{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>

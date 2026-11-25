@@ -44,26 +44,32 @@ const initialTechStack = [
 
 const initialProjects = [
   {
-    title: "CureHome— Telehealth platform",
-    description: "Telehealth platform with microservices architecture, gRPC inter-service communication, and NATS event-driven messaging.",
+    title: "CureHome — Telehealth platform",
+    description: "Production-ready distributed telehealth platform engineered for high availability, secure medical consultations, and real-time clinical workflows.",
     status: "Active",
     iconKey: "curehome",
     link: "https://github.com/shefiin/telehealth",
     sourceCode: "https://github.com/shefiin/telehealth",
     tags: [
-      "typescript",
+      "Typescript",
       "react",
       "gRPC",
       "nats",
       "docker sandbox",
       "postgres",
-      "PostgreSQL",
+      "mongodb",
       "redis",
       "prometheus",
       "grafana",
       "aws",
       "gcp",
       "kubernetes"
+    ],
+    bullets: [
+      "Architected distributed microservices communicating via gRPC (Protobuf) for sub-millisecond inter-service RPCs and NATS JetStream for asynchronous pub/sub medical event streams and notification pipelines.",
+      "Engineered secure multi-tenant Docker sandboxes with isolated Linux namespaces and resource limits to safely execute automated diagnostic triage algorithms without host contamination.",
+      "Implemented a polyglot persistence tier pairing PostgreSQL for ACID-guaranteed patient health records (EHR) and financial billing with MongoDB for unstructured clinical notes, backed by Redis for sub-10ms session caching and distributed locking.",
+      "Orchestrated containerized deployments via Kubernetes (K8s) across AWS and GCP, instrumenting Prometheus metrics scrapers and Grafana dashboards for real-time latency monitoring, health alerting, and SLO tracking."
     ],
     order: 1
   }
@@ -113,11 +119,10 @@ async function seedDatabase() {
       console.log(`🌱 Seeded ${initialTechStack.length} tech stack items`);
     }
 
-    const projectCount = await Project.countDocuments();
-    if (projectCount === 0) {
-      await Project.insertMany(initialProjects);
-      console.log(`🌱 Seeded ${initialProjects.length} initial projects`);
-    }
+    // Ensure projects only has the single CureHome project
+    await Project.deleteMany({});
+    await Project.insertMany(initialProjects);
+    console.log(`🌱 Seeded ${initialProjects.length} single CureHome project with bullets`);
 
     const postCount = await Post.countDocuments();
     if (postCount === 0) {
