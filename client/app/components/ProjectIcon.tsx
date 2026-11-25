@@ -1,8 +1,8 @@
 import React from 'react';
 import { Mic, Database, Activity } from 'lucide-react';
 
-export function ProjectIcon({ iconKey, className = "w-4 h-4 text-neutral-800" }: { iconKey: string; className?: string }) {
-  switch (iconKey.toLowerCase()) {
+export function ProjectIcon({ iconKey = 'curehome', className = "w-4 h-4 text-neutral-800" }: { iconKey?: string; className?: string }) {
+  switch ((iconKey || 'curehome').toLowerCase()) {
     case 'curehome':
     case 'telehealth':
     case 'activity':

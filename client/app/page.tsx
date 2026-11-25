@@ -6,14 +6,14 @@ import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { ProjectIcon } from './components/ProjectIcon';
 import { AdminDrawer } from './components/AdminDrawer';
-import { Database, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface Project {
   _id?: string;
   title: string;
-  description: string;
-  status: 'Active' | 'Sold' | 'Building' | 'Beta' | 'Open Source' | string;
-  iconKey: string;
+  description?: string;
+  status?: string;
+  iconKey?: string;
   link?: string;
   sourceCode?: string;
   tags?: string[];
@@ -269,8 +269,8 @@ export default function Home() {
         </h1>
 
         {/* FIND ME ON (Directly after Hey Shefin) */}
-        <section className="mb-10">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+        <section className="mb-9">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2.5">
             FIND ME ON
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -280,7 +280,7 @@ export default function Home() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
               >
                 <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
                 <span>{item.platform}</span>
@@ -463,25 +463,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* MERN Stack Indicator & DB Panel trigger */}
-        <div className="pt-8 border-t border-neutral-200/80 flex items-center justify-between flex-wrap gap-3">
-          <button
-            onClick={() => setIsAdminDrawerOpen(true)}
-            className="group inline-flex items-center gap-2 text-[11px] font-mono text-neutral-500 hover:text-neutral-900 px-2.5 py-1.5 rounded-lg border border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 transition shadow-2xs cursor-pointer"
-          >
-            <Database className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-            <span>
-              Stack: <strong className="font-semibold text-neutral-800">Next.js + Express + MongoDB</strong>
-            </span>
-            <span className={`w-1.5 h-1.5 rounded-full ${isMongoLive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-            <span className="text-[10px] text-neutral-400 group-hover:text-neutral-600">
-              (Manage DB)
-            </span>
-          </button>
-
-          <span className="text-[10px] font-mono text-neutral-400">
-            Shefin • Software Engineer
-          </span>
+        {/* Footer */}
+        <div className="pt-8 border-t border-neutral-200/80 flex items-center justify-between text-[11px] font-mono text-neutral-400">
+          <span>Shefin • Software Engineer</span>
         </div>
       </div>
 
