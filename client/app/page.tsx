@@ -317,7 +317,7 @@ export default function Home() {
         <h1 className="text-[26px] font-sans font-bold tracking-tight text-neutral-900 mb-6 leading-tight flex items-baseline gap-1.5 flex-wrap">
           <span>Hey, I&apos;m</span>
           <span className="text-[#d97706] border-b-2 border-[#f59e0b] pb-0.5">
-            {profile.highlightWord || 'Shefin'}
+            {(profile.highlightWord || 'Shefin').replace(/!+$/, '')}
           </span>
         </h1>
 

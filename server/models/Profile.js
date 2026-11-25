@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
   name: { type: String, default: 'Shefin' },
-  tagline: { type: String, default: "Hey, I'm Shefin!" },
-  highlightWord: { type: String, default: "Shefin!" },
+  tagline: { type: String, default: "Hey, I'm Shefin" },
+  highlightWord: { type: String, default: "Shefin" },
   role: { type: String, default: "Software Engineer" },
   location: { type: String, default: "Kerala, India" },
   countryFlag: { type: String, default: "🇮🇳" },
