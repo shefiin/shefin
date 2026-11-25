@@ -358,7 +358,7 @@ function WritingsList() {
                       <Link
                         key={post._id || post.slug}
                         href={`/writing/${post.slug}`}
-                        className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-amber-400 hover:shadow-2xs transition-all"
+                        className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-300 hover:shadow-2xs transition-all"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <div className="flex items-center gap-2 text-[10.5px] text-neutral-400">
@@ -422,7 +422,7 @@ function WritingsList() {
                   <Link
                     key={post._id || post.slug}
                     href={`/writing/${post.slug}`}
-                    className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-amber-400 hover:shadow-2xs transition-all"
+                    className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-300 hover:shadow-2xs transition-all"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 text-[10.5px] text-neutral-400">

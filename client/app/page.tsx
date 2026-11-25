@@ -7,7 +7,6 @@ import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
 import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
-import { ArrowUpRight, ArrowRight, PenLine, User, FileText, FolderGit2 } from 'lucide-react';
 import { ArrowUpRight, ArrowRight, PenLine, User, FileText } from 'lucide-react';
 
 interface Project {
@@ -346,27 +345,17 @@ export default function Home() {
                   <span>{item.platform}</span>
                 </a>
               ))}
-            key={item.platform}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
-                >
-            <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
-            <span>{item.platform}</span>
-          </a>
-              ))}
-          <a
-            href={profile.resumeUrl || profile.cvUrl || '/Resume'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
-          >
-            <FileText className="w-3.5 h-3.5 text-neutral-700" />
-            <span>Resume</span>
-          </a>
-      </div>
-    </section>
+            <a
+              href={profile.resumeUrl || profile.cvUrl || '/Resume'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
+            >
+              <FileText className="w-3.5 h-3.5 text-neutral-700" />
+              <span>Resume</span>
+            </a>
+          </div>
+        </section>
 
         {/* SECTION 1: PROJECTS */ }
   <section className="mb-12">
@@ -433,29 +422,26 @@ export default function Home() {
     </div>
   </section>
 
-  {/* SECTION 2: WRITING */ }
-  <section className="mb-12">
-    <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
-      WRITING
-      WRITING
-    </h2>
+        {/* SECTION 2: WRITING */}
+        <section className="mb-12">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+            WRITING
+          </h2>
 
-    <div className="space-y-3">
-      {posts.map((post, idx) => {
-        const postSlug = post.slug || (idx === 0
-          ? 'designing-scalable-distributed-systems-nodejs-mongodb'
-          : idx === 1
-            ? 'fullstack-architecture-nextjs-express'
-            : 'building-microservices-without-over-engineering');
-                  ? 'fullstack-architecture-nextjs-express'
-        : 'building-microservices-without-over-engineering');
+          <div className="space-y-3">
+            {posts.map((post, idx) => {
+              const postSlug = post.slug || (idx === 0
+                ? 'designing-scalable-distributed-systems-nodejs-mongodb'
+                : idx === 1
+                ? 'fullstack-architecture-nextjs-express'
+                : 'building-microservices-without-over-engineering');
 
-      return (
-      <Link
-        key={post._id || post.slug || idx}
-        href={`/writing/${postSlug}`}
-        className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
-      >
+              return (
+                <Link
+                  key={post._id || post.slug || idx}
+                  href={`/writing/${postSlug}`}
+                  className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
+                >
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
             <span>{post.date}</span>
