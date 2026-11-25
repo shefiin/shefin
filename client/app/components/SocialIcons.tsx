@@ -60,6 +60,15 @@ export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: 
     );
   }
 
+  if (p.includes('email') || p.includes('mail')) {
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="20" height="16" x="2" y="4" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </svg>
+    );
+  }
+
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="12" cy="12" r="10" />
@@ -67,4 +76,3 @@ export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: 
     </svg>
   );
 }
-
