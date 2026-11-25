@@ -160,6 +160,7 @@ export default function WritingStudio() {
 
       const savedData = await res.json();
       if (savedData._id) setPostId(savedData._id);
+      if (savedData.slug) setSlug(savedData.slug);
 
       setPublishSuccess(true);
       setTimeout(() => setPublishSuccess(false), 5000);

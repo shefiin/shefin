@@ -250,26 +250,65 @@ app.get('/api/posts/:slugOrId', async (req, res) => {
   }
 });
 
+// Helper to ensure a unique slug by appending incremental count (-1, -2, etc.)
+async function generateUniqueSlug(baseText, existingPostId = null) {
+  let baseSlug = (baseText || 'untitled')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'post';
+
+  let candidate = baseSlug;
+  let counter = 1;
+
+  while (true) {
+    const query = { slug: candidate };
+    if (existingPostId) {
+      query._id = { $ne: existingPostId };
+    }
+    const exists = await Post.findOne(query);
+    if (!exists) {
+      return candidate;
+    }
+    candidate = `${baseSlug}-${counter}`;
+    counter++;
+  }
+}
+
 app.post('/api/posts', async (req, res) => {
   try {
     const postData = { ...req.body };
-    if (!postData.slug && postData.title) {
-      postData.slug = postData.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '');
-    }
+    const sourceForSlug = postData.slug || postData.title || 'untitled';
+    postData.slug = await generateUniqueSlug(sourceForSlug);
+
     const post = new Post(postData);
     await post.save();
     res.status(201).json(post);
   } catch (error) {
+    // Fallback if concurrent insert causes duplicate key error
+    if (error.code === 11000) {
+      try {
+        const fallbackSlug = `${(req.body.slug || 'post')}-${Date.now().toString(36)}`;
+        const fallbackPost = new Post({ ...req.body, slug: fallbackSlug });
+        await fallbackPost.save();
+        return res.status(201).json(fallbackPost);
+      } catch (retryError) {
+        return res.status(400).json({ error: retryError.message });
+      }
+    }
     res.status(400).json({ error: error.message });
   }
 });
 
 app.put('/api/posts/:id', async (req, res) => {
   try {
-    const post = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = { ...req.body };
+    if (updateData.slug || updateData.title) {
+      const sourceForSlug = updateData.slug || updateData.title;
+      updateData.slug = await generateUniqueSlug(sourceForSlug, req.params.id);
+    }
+    const post = await Post.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!post) return res.status(404).json({ error: 'Post not found' });
     res.json(post);
   } catch (error) {
