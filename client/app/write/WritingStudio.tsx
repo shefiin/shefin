@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { TipTapEditor } from './TipTapEditor';
+import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   CheckCircle,
@@ -12,15 +12,27 @@ import {
   Calendar,
   Clock,
   Hash,
-  Sparkles,
   ExternalLink,
   Save,
   AlertCircle,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 
+// Dynamically import BlockNote with SSR disabled (standard Next.js pattern for block editors)
+const BlockNoteEditor = dynamic(
+  () => import('./BlockNoteEditorComponent'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[460px] rounded-2xl border border-neutral-200/80 bg-white p-8 animate-pulse flex items-center justify-center">
+        <p className="font-mono text-xs text-neutral-400">Loading Notion / Medium editor...</p>
+      </div>
+    ),
+  }
+);
+
 export default function WritingStudio() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get('slug') || searchParams.get('id');
 
@@ -80,8 +92,8 @@ export default function WritingStudio() {
     }
   };
 
-  const handleContentChange = (html: string, text: string) => {
-    setContent(html);
+  const handleContentChange = (markdown: string, _html: string, text: string) => {
+    setContent(markdown);
     // Auto calculate read time based on word count
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     const minutes = Math.max(1, Math.ceil(words / 200));
@@ -306,10 +318,9 @@ export default function WritingStudio() {
 
             <hr className="border-neutral-200/80 mb-8" />
 
-            <div
-              className="prose-custom text-neutral-800 text-[14.5px] font-sans leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: content || '<p>No content written yet.</p>' }}
-            />
+            <div className="article-body whitespace-pre-wrap font-sans text-[14.5px] text-neutral-800 leading-relaxed">
+              {content || 'No content written yet.'}
+            </div>
           </div>
         ) : (
           /* EDIT MODE */
@@ -390,21 +401,21 @@ export default function WritingStudio() {
               </div>
             </div>
 
-            {/* TipTap Rich Text Editor Canvas */}
+            {/* BlockNote Ready-Made Editor Canvas */}
             <div>
               <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-medium">
-                  Article Body (Novel / TipTap Editor)
+                <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-medium flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>Notion / Medium Editor (BlockNote)</span>
                 </span>
                 <span className="text-[11px] font-mono text-neutral-400">
-                  Tip: Highlight text for formatting menu
+                  Type &apos;/&apos; for commands or drag blocks with ⋮⋮
                 </span>
               </div>
 
-              <TipTapEditor
-                content={content}
+              <BlockNoteEditor
+                initialContent={content}
                 onChange={handleContentChange}
-                placeholder="Start writing your article... Highlight text for the floating menu or use the toolbar above."
               />
             </div>
           </div>
@@ -413,4 +424,3 @@ export default function WritingStudio() {
     </div>
   );
 }
-
