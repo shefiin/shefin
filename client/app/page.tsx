@@ -67,7 +67,7 @@ const defaultProfile: ProfileData = {
   subtext: "Focused on clean system architecture, scalable backends, databases, and building reliable software at scale.",
   available: true,
   availabilityText: "Open to engineering opportunities & collaborations",
-  email: 'shefin@example.com',
+  email: 'shefinptr@gmail.com',
   calLink: 'https://cal.com/shefin',
   socials: [
     { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/shefin-kp/', iconKey: 'linkedin' },
@@ -439,7 +439,7 @@ export default function Home() {
           </h2>
           <div className="space-y-1 text-xs font-mono text-neutral-700">
             <p>
-              You can reach me directly at{' '}
+              Connect via{' '}
               <a
                 href={`mailto:${profile.email}`}
                 className="text-neutral-900 border-b-2 border-amber-400/90 hover:border-amber-500 pb-0.5 transition font-medium cursor-pointer"
@@ -448,7 +448,7 @@ export default function Home() {
               </a>
             </p>
             <p>
-              Or connect via{' '}
+              Or via{' '}
               <a
                 href="https://www.linkedin.com/in/shefin-kp/"
                 target="_blank"
@@ -460,11 +460,6 @@ export default function Home() {
             </p>
           </div>
         </section>
-
-        {/* Footer */}
-        <div className="pt-8 border-t border-neutral-200/80 flex items-center justify-between text-[11px] font-mono text-neutral-400">
-          <span>Shefin • Software Engineer</span>
-        </div>
       </div>
 
       {/* MongoDB Management Drawer */}

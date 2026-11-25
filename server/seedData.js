@@ -11,7 +11,7 @@ const initialProfile = {
   location: "Kerala, India",
   countryFlag: "🇮🇳",
   specialization: "Full-Stack Systems & Modern Architecture",
-  email: "shefin@example.com",
+  email: "shefinptr@gmail.com",
   calLink: "https://cal.com/shefin",
   socials: [
     { platform: "LinkedIn", url: "https://www.linkedin.com/in/shefin-kp/", iconKey: "linkedin" },
