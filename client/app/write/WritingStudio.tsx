@@ -40,7 +40,6 @@ export default function WritingStudio() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [slug, setSlug] = useState('');
-  const [customSlugEdited, setCustomSlugEdited] = useState(false);
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>(['Engineering']);
   const [tagInput, setTagInput] = useState('');
@@ -73,7 +72,6 @@ export default function WritingStudio() {
             setTitle(data.title);
             setDescription(data.description || '');
             setSlug(data.slug || '');
-            setCustomSlugEdited(true);
             setContent(data.content || '');
             setTags(Array.isArray(data.tags) ? data.tags : []);
             setReadTime(data.readTime || '4 min read');
@@ -87,9 +85,7 @@ export default function WritingStudio() {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
-    if (!customSlugEdited) {
-      setSlug(generateSlug(newTitle));
-    }
+    setSlug(generateSlug(newTitle));
   };
 
   const handleContentChange = (markdown: string, _html: string, text: string) => {
@@ -127,7 +123,7 @@ export default function WritingStudio() {
 
     const finalSlug = slug.trim() || generateSlug(title);
     if (!finalSlug) {
-      setErrorMessage('Please enter a valid URL slug.');
+      setErrorMessage('Please provide an article title.');
       return;
     }
 
@@ -348,75 +344,44 @@ export default function WritingStudio() {
                 />
               </div>
 
-              {/* Slug & Tags Meta Bar */}
-              <div className="pt-3 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-                {/* Custom Slug */}
-                <div className="flex items-center gap-1.5 text-neutral-500 overflow-x-auto py-0.5">
-                  <span className="text-neutral-400 shrink-0">/writing/</span>
+              {/* Tags & Read Time Bar */}
+              <div className="pt-3 border-t border-neutral-100 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700 border border-neutral-200/80"
+                    >
+                      <span>#{tag}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="text-neutral-400 hover:text-neutral-700 ml-0.5"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
                   <input
                     type="text"
-                    value={slug}
-                    onChange={(e) => {
-                      setSlug(e.target.value);
-                      setCustomSlugEdited(true);
-                    }}
-                    placeholder="url-slug"
-                    className="font-mono text-neutral-800 bg-neutral-100/70 px-2 py-0.5 rounded border border-neutral-200/60 focus:outline-none focus:bg-white focus:border-neutral-400"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleAddTag}
+                    placeholder="+ Add tag (press Enter)"
+                    className="text-[11px] font-mono px-2 py-0.5 bg-transparent text-neutral-600 placeholder:text-neutral-400 focus:outline-none"
                   />
                 </div>
 
                 {/* Read time badge */}
-                <div className="flex items-center gap-1 text-neutral-400 shrink-0 text-[11px]">
+                <div className="flex items-center gap-1 text-neutral-400 shrink-0 text-[11px] font-mono">
                   <Clock className="w-3 h-3 text-neutral-400" />
                   <span>{readTime}</span>
                 </div>
-              </div>
-
-              {/* Tags Input */}
-              <div className="pt-2 flex flex-wrap items-center gap-1.5">
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-700 border border-neutral-200/80"
-                  >
-                    <span>#{tag}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="text-neutral-400 hover:text-neutral-700 ml-0.5"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleAddTag}
-                  placeholder="+ Add tag (press Enter)"
-                  className="text-[11px] font-mono px-2 py-0.5 bg-transparent text-neutral-600 placeholder:text-neutral-400 focus:outline-none"
-                />
               </div>
             </div>
 
             {/* BlockNote Ready-Made Editor Canvas */}
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 px-1">
-                <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-neutral-500">
-                  <span className="text-neutral-400">Add media:</span>
-                  <span className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200/70">
-                    /image (Upload, Drop, GIF)
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200/70">
-                    /video (Upload, YouTube)
-                  </span>
-                </div>
-                <span className="text-[11px] font-mono text-neutral-400">
-                  Tip: Drag & drop files or type &apos;/&apos;
-                </span>
-              </div>
-
               <BlockNoteEditor
                 initialContent={content}
                 onChange={handleContentChange}
