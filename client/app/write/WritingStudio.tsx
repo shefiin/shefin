@@ -79,7 +79,7 @@ export default function WritingStudio() {
             setReadTime(data.readTime || '4 min read');
           }
         })
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => setInitialLoading(false));
     }
   }, [editSlug]);
@@ -211,11 +211,10 @@ export default function WritingStudio() {
             <button
               type="button"
               onClick={() => setPreviewMode(!previewMode)}
-              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border ${
-                previewMode
-                  ? 'bg-neutral-100 text-neutral-900 border-neutral-300 font-semibold'
-                  : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
-              }`}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border ${previewMode
+                ? 'bg-neutral-100 text-neutral-900 border-neutral-300 font-semibold'
+                : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
+                }`}
             >
               <Eye className="w-3.5 h-3.5" />
               <span>{previewMode ? 'Edit Mode' : 'Preview'}</span>
@@ -403,13 +402,18 @@ export default function WritingStudio() {
 
             {/* BlockNote Ready-Made Editor Canvas */}
             <div>
-              <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-medium flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-500" />
-                  <span>Notion / Medium Editor (BlockNote)</span>
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 px-1">
+                <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono text-neutral-500">
+                  <span className="text-neutral-400">Add media:</span>
+                  <span className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200/70">
+                    /image (Upload, Drop, GIF)
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200/70">
+                    /video (Upload, YouTube)
+                  </span>
+                </div>
                 <span className="text-[11px] font-mono text-neutral-400">
-                  Type &apos;/&apos; for commands or drag blocks with ⋮⋮
+                  Tip: Drag & drop files or type &apos;/&apos;
                 </span>
               </div>
 

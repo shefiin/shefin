@@ -15,7 +15,29 @@ export default function BlockNoteEditorComponent({
   initialContent,
   onChange,
 }: BlockNoteEditorProps) {
-  const editor = useCreateBlockNote();
+  // Custom upload handler for images, animated GIFs, and videos
+  const uploadFile = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch('http://localhost:5001/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to upload media to server');
+    }
+
+    const data = await res.json();
+    return data.url;
+  };
+
+  const editor = useCreateBlockNote({
+    uploadFile,
+  });
+
   const loadedRef = useRef(false);
 
   // Load initial content once if editing an existing article
@@ -29,7 +51,6 @@ export default function BlockNoteEditorComponent({
             editor.replaceBlocks(editor.document, blocks);
           }
         } catch {
-          // If markdown parsing fails, try html or keep as is
           try {
             const htmlBlocks = await editor.tryParseHTMLToBlocks(initialContent);
             if (htmlBlocks && htmlBlocks.length > 0) {
@@ -66,4 +87,3 @@ export default function BlockNoteEditorComponent({
     </div>
   );
 }
-

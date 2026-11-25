@@ -233,6 +233,37 @@ function MarkdownBody({ content }: { content: string }) {
       continue;
     }
 
+    // Image or animated GIF: ![alt](url)
+    const imgMatch = line.match(/^!\[(.*?)\]\((.*?)\)/);
+    if (imgMatch) {
+      elements.push(
+        <figure key={`img-${i}`} className="my-6">
+          <img
+            src={imgMatch[2]}
+            alt={imgMatch[1] || 'Post media'}
+            className="rounded-xl border border-neutral-200/80 shadow-xs max-w-full h-auto mx-auto object-cover"
+          />
+          {imgMatch[1] && (
+            <figcaption className="text-center text-[11px] font-mono text-neutral-400 mt-2">
+              {imgMatch[1]}
+            </figcaption>
+          )}
+        </figure>
+      );
+      continue;
+    }
+
+    // Video tag or video markdown
+    const videoMatch = line.match(/^<video[^>]*src=["'](.*?)["']/i) || line.match(/\[video\]\((.*?)\)/i);
+    if (videoMatch) {
+      elements.push(
+        <div key={`vid-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/80 shadow-xs bg-black">
+          <video src={videoMatch[1]} controls className="w-full h-auto max-h-[460px] mx-auto" />
+        </div>
+      );
+      continue;
+    }
+
     // Bullet list item
     if (line.startsWith('- ') || line.startsWith('* ')) {
       elements.push(
