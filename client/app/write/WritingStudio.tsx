@@ -370,19 +370,7 @@ export default function WritingStudio() {
       <main className="max-w-[840px] mx-auto px-4 sm:px-6 pt-8 pb-24">
         {!adminUser ? (
           /* ADMIN LOGIN GATE */
-          <div className="max-w-md mx-auto my-12 p-6 sm:p-8 rounded-2xl border border-neutral-200/90 bg-white shadow-sm">
-            <div className="text-center mb-6">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center mx-auto mb-3 border border-amber-300/40">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h2 className="text-base font-sans font-bold text-neutral-900 tracking-tight">
-                Admin Authentication Required
-              </h2>
-              <p className="text-xs font-mono text-neutral-500 mt-1">
-                Sign in to create, edit, or publish engineering articles.
-              </p>
-            </div>
-
+          <div className="max-w-sm mx-auto my-12 p-6 sm:p-7 rounded-2xl border border-neutral-200/90 bg-white shadow-xs">
             {loginError && (
               <div className="mb-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-mono flex items-center gap-2">
                 <AlertCircle className="w-3.5 h-3.5 shrink-0" />
@@ -390,23 +378,23 @@ export default function WritingStudio() {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Admin Email or Username
+                <label className="block text-[11px] font-mono text-neutral-500 mb-1">
+                  Email or Username
                 </label>
                 <input
                   type="text"
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="shefinptr@gmail.com"
-                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  placeholder="name@example.com"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-neutral-600 mb-1">
+                <label className="block text-[11px] font-mono text-neutral-500 mb-1">
                   Password
                 </label>
                 <input
@@ -415,17 +403,17 @@ export default function WritingStudio() {
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loginLoading}
-                className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50 shadow-xs flex items-center justify-center gap-2"
+                className="w-full mt-2 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50 shadow-xs flex items-center justify-center gap-2"
               >
                 <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                <span>{loginLoading ? 'Authenticating...' : 'Sign In as Admin'}</span>
+                <span>{loginLoading ? 'Signing in...' : 'Sign In'}</span>
               </button>
             </form>
           </div>
