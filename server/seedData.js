@@ -19,8 +19,7 @@ const initialProfile = {
     { platform: "X", url: "https://x.com/shefinkp_", iconKey: "twitter" },
     { platform: "Threads", url: "https://www.threads.net/@shefiiney", iconKey: "threads" },
     { platform: "Bluesky", url: "https://bsky.app/profile/shefiin.bsky.social", iconKey: "bluesky" },
-    { platform: "Substack", url: "https://substack.com/@shefin204168", iconKey: "substack" },
-    { platform: "Email", url: "mailto:shefinptr@gmail.com", iconKey: "mail" }
+    { platform: "Substack", url: "https://substack.com/@shefin204168", iconKey: "substack" }
   ]
 };
 

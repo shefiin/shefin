@@ -76,7 +76,6 @@ const defaultProfile: ProfileData = {
     { platform: 'Threads', url: 'https://www.threads.net/@shefiiney', iconKey: 'threads' },
     { platform: 'Bluesky', url: 'https://bsky.app/profile/shefiin.bsky.social', iconKey: 'bluesky' },
     { platform: 'Substack', url: 'https://substack.com/@shefin204168', iconKey: 'substack' },
-    { platform: 'Email', url: 'mailto:shefinptr@gmail.com', iconKey: 'mail' },
   ],
 };
 
@@ -274,8 +273,10 @@ export default function Home() {
             FIND ME ON
           </h2>
           <div className="flex flex-wrap gap-2">
-            {profile.socials.map((item) => (
-              <a
+            {profile.socials
+              .filter((item) => !['email', 'gmail', 'mail'].includes(item.platform.toLowerCase()))
+              .map((item) => (
+                <a
                 key={item.platform}
                 href={item.url}
                 target="_blank"
