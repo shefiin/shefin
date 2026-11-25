@@ -324,10 +324,11 @@ export default function ArticleView({ slug }: { slug: string }) {
         <div className="mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-neutral-900 transition-colors group"
+            aria-label="Back to portfolio"
+            title="Back to portfolio"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100/80 border border-transparent hover:border-neutral-200 transition group"
           >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-            <span>Shefin / writing</span>
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
@@ -381,49 +382,6 @@ export default function ArticleView({ slug }: { slug: string }) {
             <MarkdownBody content={post.content || ''} />
           )}
         </article>
-
-        {/* Footer */}
-        <hr className="border-neutral-200/80 my-10" />
-
-        <div className="rounded-xl border border-neutral-200/80 bg-white p-4.5 mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-mono font-medium text-neutral-900 mb-0.5">Written by Shefin</p>
-              <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
-                Software Engineer focused on full-stack systems, clean architecture, and scalable backends.
-              </p>
-            </div>
-            <a
-              href="mailto:shefinptr@gmail.com"
-              className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 underline underline-offset-4 shrink-0 transition"
-            >
-              Email ↗
-            </a>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between text-xs font-mono text-neutral-500">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 hover:text-neutral-900 transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-            <span>Back to portfolio</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/write?slug=${post.slug}`}
-              className="text-[11px] text-neutral-400 hover:text-neutral-800 transition font-mono"
-            >
-              Edit in studio ↗
-            </Link>
-            <span className="text-neutral-300">•</span>
-            <span className="text-[11px] text-neutral-400 font-mono">
-              Kerala, India
-            </span>
-          </div>
-        </div>
       </main>
     </div>
   );
