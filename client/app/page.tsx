@@ -262,28 +262,26 @@ export default function Home() {
       {/* Admin Profile & Actions (Top Right) */}
       {isAdminLoggedIn && (
         <div className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 group">
-          {/* Main Trigger: Profile Icon */}
-          <button
-            type="button"
+          {/* Main Trigger: Profile Icon (morphs to a dot when hovering) */}
+          <div
             aria-label="Admin Profile Menu"
-            title="Admin Menu"
-            className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150"
+            className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150 cursor-pointer"
           >
-            <User className="w-4 h-4 text-neutral-600" />
-          </button>
+            <User className="w-4 h-4 text-neutral-600 group-hover:hidden transition-all" />
+            <span className="hidden group-hover:block w-1.5 h-1.5 rounded-full bg-neutral-500 transition-all" />
+          </div>
 
           {/* Hover Dropdown: 1. Profile icon, 2. Pencil icon */}
           <div className="absolute right-0 top-full pt-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 flex flex-col gap-1.5 items-center">
-            {/* 1. Profile Icon (opens Admin Drawer) */}
-            <button
-              type="button"
-              onClick={() => setIsAdminDrawerOpen(true)}
-              aria-label="Admin Control Panel"
-              title="Admin Control Panel"
+            {/* 1. Profile Icon (opens Profile page) */}
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              title="Profile"
               className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150"
             >
               <User className="w-4 h-4 text-neutral-600" />
-            </button>
+            </Link>
 
             {/* 2. Pencil Icon (opens Writing Studio) */}
             <Link
