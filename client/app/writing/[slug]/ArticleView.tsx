@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Calendar, Hash, FileText, Home } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Hash, FileText, Home, X, ZoomIn } from 'lucide-react';
 
 export interface BlogPostData {
   _id?: string;
@@ -183,7 +183,7 @@ function formatInlineText(text: string) {
 }
 
 // Markdown parser component tailored to minimalist developer blog
-function MarkdownBody({ content }: { content: string }) {
+function MarkdownBody({ content, onOpenImage }: { content: string; onOpenImage?: (src: string, caption?: string) => void }) {
   if (!content) return null;
 
   const lines = content.split('\n');
@@ -251,18 +251,25 @@ function MarkdownBody({ content }: { content: string }) {
     if (imgMatch) {
       const rawCaption = imgMatch[1]?.trim() || '';
       const hasCaption = rawCaption && !isRawFileName(rawCaption);
+      const src = imgMatch[2];
       elements.push(
-        <figure key={`img-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/90 bg-neutral-50/40 shadow-2xs">
-          <div className="w-full max-h-[460px] flex items-center justify-center p-1 sm:p-2 bg-neutral-100/30">
+        <figure key={`img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+          <div
+            onClick={() => onOpenImage?.(src, hasCaption ? rawCaption : undefined)}
+            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+          >
             <img
-              src={imgMatch[2]}
+              src={src}
               alt={hasCaption ? rawCaption : 'Article illustration'}
-              className="w-full h-auto max-h-[440px] object-contain rounded-lg mx-auto"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
+            <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
+              <ZoomIn className="w-3.5 h-3.5" />
+            </div>
           </div>
           {hasCaption && (
-            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2 px-4 border-t border-neutral-100 bg-white/80">
+            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2.5 px-4 border-t border-neutral-100 bg-white">
               {rawCaption}
             </figcaption>
           )}
@@ -278,20 +285,51 @@ function MarkdownBody({ content }: { content: string }) {
       const rawCaption = (figureMatch[2] || '').trim();
       const hasCaption = rawCaption && !isRawFileName(rawCaption);
       elements.push(
-        <figure key={`fig-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/90 bg-neutral-50/40 shadow-2xs">
-          <div className="w-full max-h-[460px] flex items-center justify-center p-1 sm:p-2 bg-neutral-100/30">
+        <figure key={`fig-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+          <div
+            onClick={() => onOpenImage?.(src, hasCaption ? rawCaption : undefined)}
+            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+          >
             <img
               src={src}
               alt={hasCaption ? rawCaption : 'Article illustration'}
-              className="w-full h-auto max-h-[440px] object-contain rounded-lg mx-auto"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
+            <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
+              <ZoomIn className="w-3.5 h-3.5" />
+            </div>
           </div>
           {hasCaption && (
-            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2 px-4 border-t border-neutral-100 bg-white/80">
+            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2.5 px-4 border-t border-neutral-100 bg-white">
               {rawCaption}
             </figcaption>
           )}
+        </figure>
+      );
+      continue;
+    }
+
+    // HTML standalone img tag
+    const plainImgMatch = line.match(/^<img[^>]*src=["'](.*?)["'][^>]*>/i);
+    if (plainImgMatch) {
+      const src = plainImgMatch[1];
+      elements.push(
+        <figure key={`plain-img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+          <div
+            onClick={() => onOpenImage?.(src, undefined)}
+            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+          >
+            <img
+              src={src}
+              alt="Article illustration"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              loading="lazy"
+            />
+            <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
+              <ZoomIn className="w-3.5 h-3.5" />
+            </div>
+          </div>
         </figure>
       );
       continue;
@@ -349,6 +387,7 @@ function MarkdownBody({ content }: { content: string }) {
 export default function ArticleView({ slug }: { slug: string }) {
   const initialPost = fallbackPosts[slug] || fallbackPosts['designing-scalable-distributed-systems-nodejs-mongodb'];
   const [post, setPost] = useState<BlogPostData>(initialPost);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; caption?: string } | null>(null);
 
   useEffect(() => {
     fetch(`http://localhost:5001/api/posts/${slug}`)
@@ -447,10 +486,45 @@ export default function ArticleView({ slug }: { slug: string }) {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           ) : (
-            <MarkdownBody content={post.content || ''} />
+            <MarkdownBody
+              content={post.content || ''}
+              onOpenImage={(src, caption) => setLightboxImage({ src, caption })}
+            />
           )}
         </article>
       </main>
+
+      {/* Lightbox Modal for Full Resolution Uncropped Viewing */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-[92vh] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxImage(null)}
+              className="absolute -top-10 right-0 text-white/80 hover:text-white flex items-center gap-1.5 text-xs font-mono transition"
+            >
+              <span>Close</span>
+              <X className="w-4 h-4" />
+            </button>
+            <img
+              src={lightboxImage.src}
+              alt={lightboxImage.caption || 'Enlarged media'}
+              className="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl border border-white/10 bg-neutral-900/60"
+            />
+            {lightboxImage.caption && (
+              <p className="mt-3 text-center text-xs font-mono text-neutral-300 bg-neutral-900/80 border border-white/10 px-3.5 py-1.5 rounded-full">
+                {lightboxImage.caption}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

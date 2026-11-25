@@ -135,15 +135,20 @@ body {
 }
 
 .prose-custom img {
-  width: 100%;
-  max-height: 460px;
-  object-fit: contain;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  margin: 1.5rem auto;
-  background-color: #fafafa;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  display: block;
+  width: 100% !important;
+  height: 380px !important;
+  object-fit: cover !important;
+  border-radius: 1rem !important;
+  border: 1px solid #e5e7eb !important;
+  margin: 1.5rem auto !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  display: block !important;
+}
+
+@media (max-width: 640px) {
+  .prose-custom img {
+    height: 320px !important;
+  }
 }
 
 /* BlockNote Editor Image Uniformity */
@@ -155,14 +160,21 @@ body {
 .bn-editor [data-content-type="image"] img,
 .bn-block-content[data-content-type="image"] img {
   width: 100% !important;
-  max-height: 460px !important;
-  object-fit: contain !important;
-  border-radius: 0.75rem !important;
+  height: 380px !important;
+  object-fit: cover !important;
+  border-radius: 1rem !important;
   border: 1px solid #e5e7eb !important;
   background-color: #fafafa !important;
   margin: 0.5rem auto !important;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
   display: block !important;
+}
+
+@media (max-width: 640px) {
+  .bn-editor [data-content-type="image"] img,
+  .bn-block-content[data-content-type="image"] img {
+    height: 320px !important;
+  }
 }
 
 .prose-custom video {
