@@ -300,22 +300,24 @@ export default function Home() {
                 key={project._id || idx}
                 className="space-y-2.5"
               >
-                {/* Header: Title & source code link (no brackets, no icon) */}
-                <div className="flex items-baseline gap-2.5 flex-wrap text-[13px] font-mono">
-                  <h3 className="font-semibold text-neutral-900">
+                {/* Title & Source Code Link Below */}
+                <div>
+                  <h3 className="text-[13.5px] font-mono font-semibold text-neutral-900">
                     {project.title}
                   </h3>
 
                   {project.sourceCode && (
-                    <a
-                      href={project.sourceCode}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-neutral-500 hover:text-neutral-900 text-[11.5px] transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
-                    >
-                      <span>source code: {project.sourceCode}</span>
-                      <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
-                    </a>
+                    <div className="mt-1">
+                      <a
+                        href={project.sourceCode}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-neutral-500 hover:text-neutral-900 text-[11.5px] font-mono transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
+                      >
+                        <span>source code: {project.sourceCode}</span>
+                        <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
+                      </a>
+                    </div>
                   )}
                 </div>
 
