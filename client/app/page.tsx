@@ -444,12 +444,6 @@ export default function Home() {
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
-                      {post.project && (
-                        <span className="px-1.5 py-[1px] rounded bg-amber-50 text-amber-900 border border-amber-200/70 text-[10px] font-semibold">
-                          {post.project}
-                          {post.seriesOrder ? ` • Part ${post.seriesOrder}` : ''}
-                        </span>
-                      )}
                       <span>{post.date}</span>
                       <span>•</span>
                       <span>{post.readTime}</span>
