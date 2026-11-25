@@ -320,8 +320,8 @@ export default function ArticleView({ slug }: { slug: string }) {
   }, [slug]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-neutral-800 antialiased selection:bg-neutral-200">
-      <main className="max-w-[620px] mx-auto px-5 sm:px-6 pt-12 pb-20">
+    <div className="min-h-screen bg-white text-neutral-900 font-mono py-16 px-6 sm:px-8 selection:bg-amber-100">
+      <main className="max-w-[620px] mx-auto">
         {/* Navigation back */}
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
           <Link

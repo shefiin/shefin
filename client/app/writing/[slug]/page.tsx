@@ -24,7 +24,7 @@ export default function Page({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#fafafa]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
       <ArticleContent params={params} />
     </Suspense>
   );
