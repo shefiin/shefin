@@ -253,15 +253,15 @@ function MarkdownBody({ content, onOpenImage }: { content: string; onOpenImage?:
       const hasCaption = rawCaption && !isRawFileName(rawCaption);
       const src = imgMatch[2];
       elements.push(
-        <figure key={`img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+        <figure key={`img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-50/50 shadow-2xs group">
           <div
             onClick={() => onOpenImage?.(src, hasCaption ? rawCaption : undefined)}
-            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+            className="w-full max-h-[480px] p-2 sm:p-3 overflow-hidden bg-neutral-100/30 relative cursor-zoom-in flex items-center justify-center"
           >
             <img
               src={src}
               alt={hasCaption ? rawCaption : 'Article illustration'}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="max-w-full max-h-[460px] w-auto h-auto object-contain rounded-xl mx-auto shadow-xs transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
             <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
@@ -285,15 +285,15 @@ function MarkdownBody({ content, onOpenImage }: { content: string; onOpenImage?:
       const rawCaption = (figureMatch[2] || '').trim();
       const hasCaption = rawCaption && !isRawFileName(rawCaption);
       elements.push(
-        <figure key={`fig-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+        <figure key={`fig-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-50/50 shadow-2xs group">
           <div
             onClick={() => onOpenImage?.(src, hasCaption ? rawCaption : undefined)}
-            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+            className="w-full max-h-[480px] p-2 sm:p-3 overflow-hidden bg-neutral-100/30 relative cursor-zoom-in flex items-center justify-center"
           >
             <img
               src={src}
               alt={hasCaption ? rawCaption : 'Article illustration'}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="max-w-full max-h-[460px] w-auto h-auto object-contain rounded-xl mx-auto shadow-xs transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
             <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
@@ -315,15 +315,15 @@ function MarkdownBody({ content, onOpenImage }: { content: string; onOpenImage?:
     if (plainImgMatch) {
       const src = plainImgMatch[1];
       elements.push(
-        <figure key={`plain-img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-100/30 shadow-2xs group">
+        <figure key={`plain-img-${i}`} className="my-6 rounded-2xl overflow-hidden border border-neutral-200/90 bg-neutral-50/50 shadow-2xs group">
           <div
             onClick={() => onOpenImage?.(src, undefined)}
-            className="w-full h-[320px] sm:h-[380px] overflow-hidden bg-neutral-100/60 relative cursor-zoom-in flex items-center justify-center"
+            className="w-full max-h-[480px] p-2 sm:p-3 overflow-hidden bg-neutral-100/30 relative cursor-zoom-in flex items-center justify-center"
           >
             <img
               src={src}
               alt="Article illustration"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="max-w-full max-h-[460px] w-auto h-auto object-contain rounded-xl mx-auto shadow-xs transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
             <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs">
