@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const [emailOrUsername, setEmailOrUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          emailOrUsername: emailOrUsername.trim(),
+          emailOrUsername: email.trim(),
           password
         })
       });
@@ -172,13 +172,13 @@ export default function LoginPage() {
               <form onSubmit={handleLogin} className="space-y-3.5">
                 <div>
                   <label className="block text-[11px] text-neutral-500 mb-1">
-                    Email or Username
+                    Email
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    value={emailOrUsername}
-                    onChange={(e) => setEmailOrUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
                     className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900 bg-white"
                   />

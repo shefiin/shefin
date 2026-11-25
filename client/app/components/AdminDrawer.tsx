@@ -66,7 +66,7 @@ export function AdminDrawer({
   // Auth state
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
-  const [loginEmail, setLoginEmail] = useState('shefinptr@gmail.com');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -454,10 +454,10 @@ export function AdminDrawer({
             <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto w-full">
               <div>
                 <label className="block text-xs font-mono text-neutral-600 mb-1">
-                  Email or Username
+                  Email
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}

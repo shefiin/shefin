@@ -49,7 +49,7 @@ export default function WritingStudio() {
   // Auth State
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
-  const [loginEmail, setLoginEmail] = useState('shefinptr@gmail.com');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -381,10 +381,10 @@ export default function WritingStudio() {
             <form onSubmit={handleLogin} className="space-y-3.5">
               <div>
                 <label className="block text-[11px] font-mono text-neutral-500 mb-1">
-                  Email or Username
+                  Email
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
