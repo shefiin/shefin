@@ -299,10 +299,10 @@ export default function Home() {
             {projects.map((project, idx) => (
               <div
                 key={project._id || idx}
-                className="border border-neutral-200 rounded-xl p-4 sm:p-5 bg-white hover:border-neutral-300 transition-all shadow-2xs"
+                className="space-y-2.5"
               >
-                {/* Header: [Title][source code: url] — no separate site link, no status badge */}
-                <div className="flex items-baseline gap-2 flex-wrap text-[13px] font-mono mb-2">
+                {/* Header: [Title][source code: url] — borderless minimalist presentation */}
+                <div className="flex items-baseline gap-2 flex-wrap text-[13px] font-mono">
                   <div className="flex items-center gap-1.5 font-semibold text-neutral-900">
                     <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
                     <span>[{project.title}]</span>
@@ -323,23 +323,21 @@ export default function Home() {
 
                 {/* Tech Stack Tags */}
                 {project.tags && project.tags.length > 0 && (
-                  <div className="my-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
 
                 {/* Bullet Points */}
                 {project.bullets && project.bullets.length > 0 && (
-                  <div className="pt-3 border-t border-neutral-100">
+                  <div className="pt-1.5">
                     <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
                       {project.bullets.map((bullet, bIdx) => (
                         <li key={bIdx} className="flex items-start gap-2">
