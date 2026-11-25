@@ -7,7 +7,7 @@ import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
 import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
-import { ArrowUpRight, ArrowRight, PenLine } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, PenLine, User } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -259,16 +259,43 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-neutral-900 font-mono py-16 px-6 sm:px-8">
-      {/* Admin Pencil Icon (Top Right) */}
+      {/* Admin Profile & Actions (Top Right) */}
       {isAdminLoggedIn && (
-        <Link
-          href="/write"
-          title="Writing Studio"
-          aria-label="Writing Studio"
-          className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-200 group"
-        >
-          <PenLine className="w-4 h-4 text-neutral-500 group-hover:text-neutral-800 transition-colors" />
-        </Link>
+        <div className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 group">
+          {/* Main Trigger: Profile Icon */}
+          <button
+            type="button"
+            aria-label="Admin Profile Menu"
+            title="Admin Menu"
+            className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150"
+          >
+            <User className="w-4 h-4 text-neutral-600" />
+          </button>
+
+          {/* Hover Dropdown: 1. Profile icon, 2. Pencil icon */}
+          <div className="absolute right-0 top-full pt-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 flex flex-col gap-1.5 items-center">
+            {/* 1. Profile Icon (opens Admin Drawer) */}
+            <button
+              type="button"
+              onClick={() => setIsAdminDrawerOpen(true)}
+              aria-label="Admin Control Panel"
+              title="Admin Control Panel"
+              className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150"
+            >
+              <User className="w-4 h-4 text-neutral-600" />
+            </button>
+
+            {/* 2. Pencil Icon (opens Writing Studio) */}
+            <Link
+              href="/write"
+              aria-label="Writing Studio"
+              title="Writing Studio"
+              className="w-9 h-9 rounded-full bg-white hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 border border-neutral-200/90 hover:border-neutral-300 shadow-2xs flex items-center justify-center transition-all duration-150"
+            >
+              <PenLine className="w-4 h-4 text-neutral-600" />
+            </Link>
+          </div>
+        </div>
       )}
 
       <div className="max-w-[620px] mx-auto">
