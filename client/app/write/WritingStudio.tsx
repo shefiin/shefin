@@ -19,7 +19,8 @@ import {
   LogOut,
   ShieldCheck,
   RefreshCw,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react';
 import {
   getAuthHeaders,
@@ -153,7 +154,27 @@ export default function WritingStudio() {
       .catch(() => {});
   }, []);
 
-  // If editing an existing article, fetch its details
+  // Reset all state to start a fresh article
+  const handleStartNewArticle = () => {
+    setPostId(null);
+    setTitle('');
+    setDescription('');
+    setSlug('');
+    setContent('');
+    setTags(['Engineering']);
+    setTagInput('');
+    setReadTime('3 min read');
+    setProject('');
+    setSeriesOrder('');
+    setSavedBaseline(null);
+    setIsEditingMode(false);
+    setErrorMessage(null);
+    setPublishSuccess(false);
+    setIsCustomProject(false);
+    router.replace('/write');
+  };
+
+  // If editing an existing article, fetch its details. If navigating to blank /write, reset state!
   useEffect(() => {
     if (editSlug) {
       setInitialLoading(true);
@@ -189,6 +210,23 @@ export default function WritingStudio() {
         })
         .catch(() => {})
         .finally(() => setInitialLoading(false));
+    } else {
+      // Unconditionally reset all state when navigating to blank /write
+      setPostId(null);
+      setTitle('');
+      setDescription('');
+      setSlug('');
+      setContent('');
+      setTags(['Engineering']);
+      setTagInput('');
+      setReadTime('3 min read');
+      setProject('');
+      setSeriesOrder('');
+      setSavedBaseline(null);
+      setIsEditingMode(false);
+      setErrorMessage(null);
+      setPublishSuccess(false);
+      setIsCustomProject(false);
     }
   }, [editSlug]);
 
@@ -273,8 +311,14 @@ export default function WritingStudio() {
       }
 
       const savedData = await res.json();
+      const isNewPost = !postId;
       if (savedData._id) setPostId(savedData._id);
       if (savedData.slug) setSlug(savedData.slug);
+
+      // If this was a new post, sync the browser URL to /write?slug=... so future visits to /write start clean
+      if (isNewPost && (savedData.slug || savedData._id)) {
+        router.replace(`/write?slug=${savedData.slug || savedData._id}`, { scroll: false });
+      }
 
       // Update baseline with current saved values and exit edit mode
       setSavedBaseline({
@@ -345,6 +389,18 @@ export default function WritingStudio() {
               <Eye className="w-3.5 h-3.5" />
               <span>{previewMode ? 'Edit Mode' : 'Preview'}</span>
             </button>
+
+            {postId && (
+              <button
+                type="button"
+                onClick={handleStartNewArticle}
+                title="Start a blank new article"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono transition border bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 shadow-2xs"
+              >
+                <Plus className="w-3.5 h-3.5 text-neutral-500" />
+                <span className="hidden sm:inline">New Article</span>
+              </button>
+            )}
 
             {postId ? (
               !isEditingMode ? (
@@ -656,6 +712,7 @@ export default function WritingStudio() {
             {/* BlockNote Ready-Made Editor Canvas */}
             <div>
               <BlockNoteEditor
+                key={postId || 'new-article'}
                 initialContent={content}
                 onChange={handleContentChange}
               />
