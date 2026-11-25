@@ -11,7 +11,7 @@ const profileSchema = new mongoose.Schema({
   subtext: { type: String, default: "Focused on clean architecture, scalable backends, databases, and reliable software." },
   available: { type: Boolean, default: true },
   availabilityText: { type: String, default: "Open to engineering opportunities & collaborations" },
-  email: { type: String, default: "shefin@example.com" },
+  email: { type: String, default: "shefinptr@gmail.com" },
   calLink: { type: String, default: "https://cal.com/shefin" },
   socials: [
     {
