@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
-import { ProjectIcon } from './components/ProjectIcon';
 import { AdminDrawer } from './components/AdminDrawer';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -301,12 +300,11 @@ export default function Home() {
                 key={project._id || idx}
                 className="space-y-2.5"
               >
-                {/* Header: [Title][source code: url] — borderless minimalist presentation */}
-                <div className="flex items-baseline gap-2 flex-wrap text-[13px] font-mono">
-                  <div className="flex items-center gap-1.5 font-semibold text-neutral-900">
-                    <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
-                    <span>[{project.title}]</span>
-                  </div>
+                {/* Header: Title & source code link (no brackets, no icon) */}
+                <div className="flex items-baseline gap-2.5 flex-wrap text-[13px] font-mono">
+                  <h3 className="font-semibold text-neutral-900">
+                    {project.title}
+                  </h3>
 
                   {project.sourceCode && (
                     <a
@@ -315,7 +313,7 @@ export default function Home() {
                       rel="noopener noreferrer"
                       className="text-neutral-500 hover:text-neutral-900 text-[11.5px] transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
                     >
-                      <span>[source code: {project.sourceCode}]</span>
+                      <span>source code: {project.sourceCode}</span>
                       <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
                     </a>
                   )}
