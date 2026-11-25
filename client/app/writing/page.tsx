@@ -14,8 +14,7 @@ import {
   Hash,
   PenLine,
   Layers,
-  Sparkles,
-  Home
+  Sparkles
 } from 'lucide-react';
 import { verifyCurrentAuth } from '../utils/auth';
 
@@ -202,26 +201,15 @@ function WritingsList() {
           <span>Back to Portfolio</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          {isAdmin && (
-            <Link
-              href="/write"
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-[11.5px] text-neutral-800 transition"
-            >
-              <PenLine className="w-3 h-3 text-amber-600" />
-              <span>Write New</span>
-            </Link>
-          )}
-
+        {isAdmin ? (
           <Link
-            href="/"
-            aria-label="Portfolio Home"
-            title="Portfolio Home"
-            className="w-7 h-7 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 flex items-center justify-center transition"
+            href="/write"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-[11.5px] text-neutral-800 transition"
           >
-            <Home className="w-4 h-4" />
+            <PenLine className="w-3 h-3 text-amber-600" />
+            <span>Write New</span>
           </Link>
-        </div>
+        ) : <div />}
       </div>
 
       {/* Header */}
