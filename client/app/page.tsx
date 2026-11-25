@@ -296,93 +296,62 @@ export default function Home() {
           </h2>
 
           <div className="space-y-4">
-            {projects.map((project, idx) => {
-              const isActive = project.status?.toLowerCase() === 'active';
-              const isSold = project.status?.toLowerCase() === 'sold';
-
-              return (
-                <div
-                  key={project._id || idx}
-                  className="group border border-neutral-200 rounded-xl p-4 sm:p-5 bg-white hover:border-neutral-300 transition-all shadow-2xs"
-                >
-                  {/* Header: [Title] [source code: url] and Status */}
-                  <div className="flex items-start justify-between gap-3 mb-2.5 flex-wrap">
-                    <div className="flex items-center gap-2 flex-wrap text-[13px] font-mono">
-                      <div className="flex items-center gap-1.5 font-semibold text-neutral-900 group-hover:text-amber-700 transition">
-                        <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
-                        <a
-                          href={project.link || project.sourceCode || 'https://github.com/shefiin/telehealth'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:underline"
-                        >
-                          [{project.title}]
-                        </a>
-                      </div>
-
-                      {project.sourceCode && (
-                        <a
-                          href={project.sourceCode}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-neutral-500 hover:text-neutral-900 text-[11.5px] transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
-                        >
-                          <span>[source code: {project.sourceCode}]</span>
-                          <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
-                        </a>
-                      )}
-                    </div>
-
-                    {/* Status Badge */}
-                    {isActive && (
-                      <span className="bg-[#eaf8f0] text-[#008744] border border-[#bdedd0] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
-                        Active
-                      </span>
-                    )}
-                    {isSold && (
-                      <span className="bg-[#fff1e5] text-[#b44800] border border-[#fed7aa] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
-                        Sold
-                      </span>
-                    )}
-                    {!isActive && !isSold && project.status && (
-                      <span className="bg-neutral-100 text-neutral-700 border border-neutral-200 text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
-                        {project.status}
-                      </span>
-                    )}
+            {projects.map((project, idx) => (
+              <div
+                key={project._id || idx}
+                className="border border-neutral-200 rounded-xl p-4 sm:p-5 bg-white hover:border-neutral-300 transition-all shadow-2xs"
+              >
+                {/* Header: [Title][source code: url] — no separate site link, no status badge */}
+                <div className="flex items-baseline gap-2 flex-wrap text-[13px] font-mono mb-2">
+                  <div className="flex items-center gap-1.5 font-semibold text-neutral-900">
+                    <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
+                    <span>[{project.title}]</span>
                   </div>
 
-                  {/* Tech Stack Tags */}
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="my-3">
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Advanced Bullet Points */}
-                  {project.bullets && project.bullets.length > 0 && (
-                    <div className="pt-3 border-t border-neutral-100">
-                      <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
-                        {project.bullets.map((bullet, bIdx) => (
-                          <li key={bIdx} className="flex items-start gap-2">
-                            <span className="text-amber-500 font-bold select-none shrink-0 leading-5">▹</span>
-                            <span className="flex-1">{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  {project.sourceCode && (
+                    <a
+                      href={project.sourceCode}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-neutral-500 hover:text-neutral-900 text-[11.5px] transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
+                    >
+                      <span>[source code: {project.sourceCode}]</span>
+                      <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
+                    </a>
                   )}
                 </div>
-              );
-            })}
+
+                {/* Tech Stack Tags */}
+                {project.tags && project.tags.length > 0 && (
+                  <div className="my-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bullet Points */}
+                {project.bullets && project.bullets.length > 0 && (
+                  <div className="pt-3 border-t border-neutral-100">
+                    <ul className="space-y-2 text-[12px] font-mono text-neutral-700 leading-relaxed">
+                      {project.bullets.map((bullet, bIdx) => (
+                        <li key={bIdx} className="flex items-start gap-2">
+                          <span className="text-amber-500 font-bold select-none shrink-0 leading-5">▹</span>
+                          <span className="flex-1">{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </section>
 
