@@ -5,8 +5,8 @@ const Post = require('./models/Post');
 
 const initialProfile = {
   name: "Shefin",
-  tagline: "Hey, I'm Shefin!",
-  highlightWord: "Shefin!",
+  tagline: "Hey, I'm Shefin",
+  highlightWord: "Shefin",
   role: "Software Engineer based in Kerala, India",
   location: "Kerala, India",
   countryFlag: "🇮🇳",

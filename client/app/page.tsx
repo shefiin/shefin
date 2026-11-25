@@ -59,7 +59,7 @@ interface ProfileData {
 const defaultProfile: ProfileData = {
   name: 'Shefin',
   tagline: "Hey, I'm Shefin",
-  highlightWord: 'Shefin!',
+  highlightWord: 'Shefin',
   role: 'Software Engineer based in Kerala, India',
   location: 'Kerala, India',
   countryFlag: '🇮🇳',
@@ -279,7 +279,7 @@ export default function Home() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors"
               >
                 <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
                 <span>{item.platform}</span>
