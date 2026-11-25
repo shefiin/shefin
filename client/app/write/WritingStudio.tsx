@@ -79,6 +79,34 @@ export default function WritingStudio() {
   const [previewMode, setPreviewMode] = useState(false);
   const [initialLoading, setInitialLoading] = useState(false);
 
+  // Edit/Saved state tracking
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [savedBaseline, setSavedBaseline] = useState<{
+    title: string;
+    description: string;
+    slug: string;
+    content: string;
+    tags: string[];
+    project: string;
+    seriesOrder: number | '';
+    readTime: string;
+  } | null>(null);
+
+  // Checks whether the article has unsaved changes compared to the saved baseline
+  const isDirty = React.useMemo(() => {
+    if (!savedBaseline) return true; // Brand new article before initial save
+    return (
+      title.trim() !== savedBaseline.title.trim() ||
+      description.trim() !== savedBaseline.description.trim() ||
+      slug.trim() !== savedBaseline.slug.trim() ||
+      content.trim() !== savedBaseline.content.trim() ||
+      tags.join(',') !== savedBaseline.tags.join(',') ||
+      project.trim() !== savedBaseline.project.trim() ||
+      seriesOrder !== savedBaseline.seriesOrder ||
+      readTime !== savedBaseline.readTime
+    );
+  }, [title, description, slug, content, tags, project, seriesOrder, readTime, savedBaseline]);
+
   // Check auth on mount: If admin is not in session, route immediately to login
   useEffect(() => {
     async function checkAuth() {
@@ -138,10 +166,25 @@ export default function WritingStudio() {
             setDescription(data.description || '');
             setSlug(data.slug || '');
             setContent(data.content || '');
-            setTags(Array.isArray(data.tags) ? data.tags : []);
+            const postTags = Array.isArray(data.tags) ? data.tags : [];
+            setTags(postTags);
             setReadTime(data.readTime || '4 min read');
             setProject(data.project || '');
-            setSeriesOrder(typeof data.seriesOrder === 'number' && data.seriesOrder > 0 ? data.seriesOrder : '');
+            const order = typeof data.seriesOrder === 'number' && data.seriesOrder > 0 ? data.seriesOrder : '';
+            setSeriesOrder(order);
+
+            // Populate baseline to detect future changes
+            setSavedBaseline({
+              title: data.title,
+              description: data.description || '',
+              slug: data.slug || '',
+              content: data.content || '',
+              tags: postTags,
+              project: data.project || '',
+              seriesOrder: order,
+              readTime: data.readTime || '4 min read',
+            });
+            setIsEditingMode(false);
           }
         })
         .catch(() => {})
@@ -233,6 +276,19 @@ export default function WritingStudio() {
       if (savedData._id) setPostId(savedData._id);
       if (savedData.slug) setSlug(savedData.slug);
 
+      // Update baseline with current saved values and exit edit mode
+      setSavedBaseline({
+        title: postPayload.title,
+        description: postPayload.description,
+        slug: postPayload.slug,
+        content: postPayload.content,
+        tags: [...postPayload.tags],
+        project: postPayload.project,
+        seriesOrder: postPayload.seriesOrder,
+        readTime: postPayload.readTime,
+      });
+      setIsEditingMode(false);
+
       setPublishSuccess(true);
       setTimeout(() => setPublishSuccess(false), 5000);
     } catch (err: unknown) {
@@ -272,7 +328,7 @@ export default function WritingStudio() {
 
             <span className="text-xs font-mono font-medium text-neutral-700 flex items-center gap-1.5">
               <Edit3 className="w-3 h-3 text-amber-600" />
-              <span>{postId ? 'Editing Post' : 'Writing Studio'}</span>
+              <span>{postId ? (isEditingMode ? 'Editing Post' : 'Post Saved') : 'Writing Studio'}</span>
             </span>
           </div>
 
@@ -290,15 +346,43 @@ export default function WritingStudio() {
               <span>{previewMode ? 'Edit Mode' : 'Preview'}</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handlePublish}
-              disabled={isPublishing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition border bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50"
-            >
-              <Save className="w-3.5 h-3.5 text-neutral-500" />
-              <span>{isPublishing ? 'Publishing...' : postId ? 'Update Post' : 'Publish Article'}</span>
-            </button>
+            {postId ? (
+              !isEditingMode ? (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingMode(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition border bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 shadow-2xs font-medium"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Edit</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handlePublish}
+                  disabled={!isDirty || isPublishing}
+                  title={!isDirty ? 'Make any change to enable update' : 'Save updates to article'}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition border ${
+                    !isDirty || isPublishing
+                      ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60'
+                      : 'bg-white text-neutral-900 border-neutral-300 hover:bg-neutral-50 shadow-2xs font-medium'
+                  }`}
+                >
+                  <Save className="w-3.5 h-3.5 text-neutral-500" />
+                  <span>{isPublishing ? 'Updating...' : 'Update'}</span>
+                </button>
+              )
+            ) : (
+              <button
+                type="button"
+                onClick={handlePublish}
+                disabled={isPublishing}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition border bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900 shadow-2xs font-medium disabled:opacity-50"
+              >
+                <Save className="w-3.5 h-3.5 text-neutral-500" />
+                <span>{isPublishing ? 'Publishing...' : 'Publish Article'}</span>
+              </button>
+            )}
 
             <button
               type="button"
