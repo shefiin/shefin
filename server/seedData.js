@@ -204,15 +204,18 @@ async function seedDatabase() {
       console.log(`🌱 Seeded ${initialTechStack.length} tech stack items`);
     }
 
-    // Ensure projects only has the single CureHome project
-    await Project.deleteMany({});
-    await Project.insertMany(initialProjects);
-    console.log(`🌱 Seeded ${initialProjects.length} single CureHome project with bullets`);
+    const projectCount = await Project.countDocuments();
+    if (projectCount === 0) {
+      await Project.insertMany(initialProjects);
+      console.log(`🌱 Seeded ${initialProjects.length} single CureHome project with bullets`);
+    }
 
-    // Ensure posts has internal blog posts with rich content
-    await Post.deleteMany({});
-    await Post.insertMany(initialPosts);
-    console.log(`🌱 Seeded ${initialPosts.length} internal blog posts with full content`);
+    // Ensure posts has internal blog posts if empty
+    const postCount = await Post.countDocuments();
+    if (postCount === 0) {
+      await Post.insertMany(initialPosts);
+      console.log(`🌱 Seeded ${initialPosts.length} internal blog posts with full content`);
+    }
 
     // Ensure admin user exists with hashed password
     const adminEmail = (process.env.ADMIN_EMAIL || 'shefinptr@gmail.com').toLowerCase();
