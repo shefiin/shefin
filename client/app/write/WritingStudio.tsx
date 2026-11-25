@@ -27,6 +27,16 @@ import {
   verifyCurrentAuth,
   AdminUser
 } from '../utils/auth';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+  SelectSeparator,
+} from '@/app/components/ui/select';
 
 // Dynamically import BlockNote with SSR disabled (standard Next.js pattern for block editors)
 const BlockNoteEditor = dynamic(
@@ -432,26 +442,48 @@ export default function WritingStudio() {
                 </div>
 
                 {!isCustomProject ? (
-                  <select
-                    value={project}
-                    onChange={(e) => {
-                      if (e.target.value === '__custom__') {
+                  <Select
+                    value={project ? project : "__standalone__"}
+                    onValueChange={(val) => {
+                      if (val === '__custom__') {
                         setIsCustomProject(true);
                         setProject('');
+                      } else if (val === '__standalone__') {
+                        setProject('');
                       } else {
-                        setProject(e.target.value);
+                        setProject(val);
                       }
                     }}
-                    className="px-2.5 py-1 rounded-lg border border-neutral-200/90 bg-neutral-50 text-neutral-800 text-xs font-mono focus:outline-none focus:border-neutral-400 cursor-pointer"
                   >
-                    <option value="">Standalone / General Writing</option>
-                    {availableProjects.map((p) => (
-                      <option key={p._id || p.title} value={p.title}>
-                        Project: {p.title}
-                      </option>
-                    ))}
-                    <option value="__custom__">+ Enter custom project / series...</option>
-                  </select>
+                    <SelectTrigger className="w-[260px] sm:w-[280px]">
+                      <SelectValue placeholder="Select group / series" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>General</SelectLabel>
+                        <SelectItem value="__standalone__">Standalone / General Writing</SelectItem>
+                      </SelectGroup>
+                      {availableProjects.length > 0 && (
+                        <>
+                          <SelectSeparator />
+                          <SelectGroup>
+                            <SelectLabel>Existing Projects</SelectLabel>
+                            {availableProjects.map((p) => (
+                              <SelectItem key={p._id || p.title} value={p.title}>
+                                {p.title}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </>
+                      )}
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectItem value="__custom__" className="text-amber-800 font-medium">
+                          + Enter custom project / series...
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <div className="flex items-center gap-1.5">
                     <input
