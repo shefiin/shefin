@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: "/Resume",
+        destination: "/resume.pdf",
+      },
+      {
+        source: "/resume",
+        destination: "/resume.pdf",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

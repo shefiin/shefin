@@ -54,6 +54,7 @@ interface ProfileData {
   email: string;
   calLink: string;
   cvUrl?: string;
+  resumeUrl?: string;
   socials: Array<{
     platform: string;
     url: string;
@@ -74,7 +75,8 @@ const defaultProfile: ProfileData = {
   availabilityText: "Open to engineering opportunities & collaborations",
   email: 'shefinptr@gmail.com',
   calLink: 'https://cal.com/shefin',
-  cvUrl: '/cv.pdf',
+  cvUrl: '/Resume',
+  resumeUrl: '/Resume',
   socials: [
     { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/shefin-kp/', iconKey: 'linkedin' },
     { platform: 'GitHub', url: 'https://github.com/shefiin', iconKey: 'github' },
@@ -342,13 +344,13 @@ export default function Home() {
               </a>
             ))}
             <a
-              href={profile.cvUrl || '/cv.pdf'}
+              href={profile.resumeUrl || profile.cvUrl || '/Resume'}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shrink-0"
             >
               <FileText className="w-3.5 h-3.5 text-neutral-700" />
-              <span>CV</span>
+              <span>Resume</span>
             </a>
           </div>
         </section>
