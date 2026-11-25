@@ -58,7 +58,7 @@ interface ProfileData {
 
 const defaultProfile: ProfileData = {
   name: 'Shefin',
-  tagline: "Hey, I'm Shefin!",
+  tagline: "Hey, I'm Shefin",
   highlightWord: 'Shefin!',
   role: 'Software Engineer based in Kerala, India',
   location: 'Kerala, India',
@@ -263,7 +263,7 @@ export default function Home() {
         <h1 className="text-[26px] font-sans font-bold tracking-tight text-neutral-900 mb-6 leading-tight flex items-baseline gap-1.5 flex-wrap">
           <span>Hey, I&apos;m</span>
           <span className="text-[#d97706] border-b-2 border-[#f59e0b] pb-0.5">
-            {profile.highlightWord || 'Shefin!'}
+            {profile.highlightWord || 'Shefin'}
           </span>
         </h1>
 
@@ -272,14 +272,14 @@ export default function Home() {
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2.5">
             FIND ME ON
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {profile.socials.map((item) => (
               <a
                 key={item.platform}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors shadow-2xs"
               >
                 <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
                 <span>{item.platform}</span>
@@ -325,7 +325,7 @@ export default function Home() {
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
+                        className="text-[10.5px] font-mono px-2 py-[1.5px] leading-tight rounded-md bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
                       >
                         {tag}
                       </span>
@@ -399,7 +399,7 @@ export default function Home() {
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
+                        className="text-[10px] font-mono px-1.5 py-[1px] leading-tight rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
                       >
                         #{tag}
                       </span>
@@ -417,11 +417,11 @@ export default function Home() {
             TECH STACK
           </h2>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {techStack.map((tech) => (
               <div
                 key={tech.name}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors shadow-2xs"
               >
                 <TechIcon name={tech.iconKey || tech.name} className="w-3.5 h-3.5" />
                 <span>{tech.name}</span>
