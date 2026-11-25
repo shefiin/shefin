@@ -155,7 +155,7 @@ function formatInlineText(text: string) {
       parts.push(
         <code
           key={match.index}
-          className="font-mono text-[12.5px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 border border-neutral-200/70"
+          className="font-mono text-[13px] px-1.5 py-0.5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200/90 shadow-2xs"
         >
           {token.slice(1, -1)}
         </code>
@@ -239,14 +239,17 @@ function MarkdownBody({ content }: { content: string }) {
     const imgMatch = line.match(/^!\[(.*?)\]\((.*?)\)/);
     if (imgMatch) {
       elements.push(
-        <figure key={`img-${i}`} className="my-6">
-          <img
-            src={imgMatch[2]}
-            alt={imgMatch[1] || 'Post media'}
-            className="rounded-xl border border-neutral-200/80 shadow-xs max-w-full h-auto mx-auto object-cover"
-          />
+        <figure key={`img-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/90 bg-neutral-50/40 shadow-2xs">
+          <div className="w-full max-h-[460px] flex items-center justify-center p-1 sm:p-2 bg-neutral-100/30">
+            <img
+              src={imgMatch[2]}
+              alt={imgMatch[1] || 'Post media'}
+              className="w-full h-auto max-h-[440px] object-contain rounded-lg mx-auto"
+              loading="lazy"
+            />
+          </div>
           {imgMatch[1] && (
-            <figcaption className="text-center text-[11px] font-mono text-neutral-400 mt-2">
+            <figcaption className="text-center text-[11px] font-mono text-neutral-400 py-1.5 border-t border-neutral-100 bg-white/70">
               {imgMatch[1]}
             </figcaption>
           )}

@@ -96,14 +96,16 @@ body {
   margin: 1.25rem 0;
 }
 
-.prose-custom code {
+.prose-custom code:not(pre code),
+.bn-editor code:not(pre code) {
   background-color: #f3f4f6;
-  color: #1f2937;
+  color: #111827;
   font-family: var(--font-mono), monospace;
   font-size: 0.85em;
-  padding: 0.15em 0.4em;
-  border-radius: 0.25rem;
+  padding: 0.18em 0.45em;
+  border-radius: 0.375rem;
   border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.04);
 }
 
 .prose-custom pre {
@@ -133,12 +135,34 @@ body {
 }
 
 .prose-custom img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  max-height: 460px;
+  object-fit: contain;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   margin: 1.5rem auto;
+  background-color: #fafafa;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: block;
+}
+
+/* BlockNote Editor Image Uniformity */
+.bn-editor [data-content-type="image"],
+.bn-block-content[data-content-type="image"] {
+  width: 100% !important;
+}
+
+.bn-editor [data-content-type="image"] img,
+.bn-block-content[data-content-type="image"] img {
+  width: 100% !important;
+  max-height: 460px !important;
+  object-fit: contain !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: #fafafa !important;
+  margin: 0.5rem auto !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  display: block !important;
 }
 
 .prose-custom video {
