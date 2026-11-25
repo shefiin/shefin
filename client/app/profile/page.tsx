@@ -12,11 +12,11 @@ import {
   ExternalLink,
   Calendar,
   Clock,
-  Hash,
   RefreshCw,
   LogOut,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 import {
   getAuthHeaders,
@@ -44,8 +44,12 @@ export default function ProfilePage() {
 
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Custom Delete Modal State
+  const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Guard: Must be authenticated as Admin
   useEffect(() => {
@@ -79,15 +83,25 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDelete = async (post: BlogPost) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${post.title}"?\n\nThis will permanently remove the article from your portfolio.`
-    );
-    if (!confirmed) return;
+  const handleOpenDeleteModal = (post: BlogPost) => {
+    setPostToDelete(post);
+    setDeleteError(null);
+  };
 
-    setDeletingId(post._id);
+  const handleCloseDeleteModal = () => {
+    if (isDeleting) return;
+    setPostToDelete(null);
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${post._id}`, {
+      const res = await fetch(`http://localhost:5001/api/posts/${postToDelete._id}`, {
         method: 'DELETE',
         headers: {
           ...getAuthHeaders()
@@ -100,19 +114,20 @@ export default function ProfilePage() {
         return;
       }
 
-      if (res.ok) {
-        setPosts((prev) => prev.filter((p) => p._id !== post._id));
-        setNotice(`Deleted "${post.title}"`);
-        setTimeout(() => setNotice(null), 3500);
-      } else {
+      if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        alert(err.error || 'Failed to delete post');
+        throw new Error(err.error || 'Failed to delete article');
       }
-    } catch (err) {
-      console.error(err);
-      alert('Error connecting to backend server');
+
+      const deletedTitle = postToDelete.title;
+      setPosts((prev) => prev.filter((p) => p._id !== postToDelete._id));
+      setPostToDelete(null);
+      setNotice(`Deleted "${deletedTitle}"`);
+      setTimeout(() => setNotice(null), 3500);
+    } catch (err: any) {
+      setDeleteError(err.message || 'Error deleting article from MongoDB');
     } finally {
-      setDeletingId(null);
+      setIsDeleting(false);
     }
   };
 
@@ -269,7 +284,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  {/* Actions: Edit & Delete */}
+                  {/* Actions: View, Edit & Delete */}
                   <div className="flex items-center gap-1 shrink-0 pt-0.5">
                     <Link
                       href={`/writing/${post.slug || post._id}`}
@@ -289,16 +304,11 @@ export default function ProfilePage() {
 
                     <button
                       type="button"
-                      onClick={() => handleDelete(post)}
-                      disabled={deletingId === post._id}
+                      onClick={() => handleOpenDeleteModal(post)}
                       title="Delete Article"
-                      className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+                      className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition"
                     >
-                      {deletingId === post._id ? (
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-red-500" />
-                      ) : (
-                        <Trash2 className="w-3.5 h-3.5" />
-                      )}
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -325,7 +335,89 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {postToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={handleCloseDeleteModal}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-neutral-200 relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCloseDeleteModal}
+              disabled={isDeleting}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 transition p-1 rounded-full hover:bg-neutral-100 disabled:opacity-50"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-start gap-3.5 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 border border-red-200/80 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="flex-1 pr-6">
+                <h3 className="text-base font-semibold text-neutral-900 font-sans">
+                  Delete Article
+                </h3>
+                <p className="text-xs text-neutral-500 font-mono mt-0.5">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-neutral-200/80 bg-neutral-50/70 mb-5 text-xs font-mono space-y-1">
+              <p className="text-neutral-500 text-[11px]">Are you sure you want to permanently delete:</p>
+              <p className="font-semibold text-neutral-900 line-clamp-2">
+                &ldquo;{postToDelete.title}&rdquo;
+              </p>
+              <p className="text-[10.5px] text-neutral-400 font-mono">
+                /writing/{postToDelete.slug}
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="mb-4 p-2.5 rounded-xl border border-red-200 bg-red-50 text-xs text-red-700 font-mono flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+                <span>{deleteError}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-1">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleCloseDeleteModal}
+                className="px-4 py-2 rounded-xl border border-neutral-200 hover:bg-neutral-100 text-xs font-mono text-neutral-700 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-mono font-medium transition flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Article</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
-

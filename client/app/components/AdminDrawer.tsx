@@ -96,6 +96,10 @@ export function AdminDrawer({
   const [newPostReadTime, setNewPostReadTime] = useState('5 min read');
   const [submittingPost, setSubmittingPost] = useState(false);
 
+  // Custom Delete Modal State
+  const [postToDelete, setPostToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [isDeletingPost, setIsDeletingPost] = useState(false);
+
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
   // Verify auth & fetch health when drawer opens
@@ -310,10 +314,11 @@ export function AdminDrawer({
     }
   };
 
-  const handleDeletePost = async (id: string) => {
-    if (!confirm('Delete this blog post from MongoDB?')) return;
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return;
+    setIsDeletingPost(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${id}`, {
+      const res = await fetch(`http://localhost:5001/api/posts/${postToDelete.id}`, {
         method: 'DELETE',
         headers: {
           ...getAuthHeaders()
@@ -327,13 +332,16 @@ export function AdminDrawer({
       }
 
       if (res.ok) {
-        setActionNotice('Blog post deleted!');
+        setActionNotice(`Deleted "${postToDelete.title}"`);
         setTimeout(() => setActionNotice(null), 3000);
+        setPostToDelete(null);
         fetchPosts();
         onDataRefresh();
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsDeletingPost(false);
     }
   };
 
@@ -877,7 +885,7 @@ export function AdminDrawer({
                             </Link>
                             {post._id && (
                               <button
-                                onClick={() => handleDeletePost(post._id!)}
+                                onClick={() => setPostToDelete({ id: post._id!, title: post.title })}
                                 className="p-1 text-neutral-400 hover:text-red-600 transition"
                                 title="Delete from MongoDB"
                               >
@@ -975,6 +983,72 @@ export function AdminDrawer({
           )}
         </div>
       </div>
+
+      {/* Custom Delete Confirmation Modal */}
+      {postToDelete && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={() => {
+            if (!isDeletingPost) setPostToDelete(null);
+          }}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-neutral-200 relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 mb-3.5">
+              <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 border border-red-200/80 flex items-center justify-center shrink-0">
+                <Trash2 className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-semibold text-neutral-900 font-sans">
+                  Delete Article
+                </h4>
+                <p className="text-[11px] text-neutral-500 font-mono">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl border border-neutral-200/80 bg-neutral-50/70 mb-4 text-xs font-mono">
+              <p className="text-[11px] text-neutral-500 mb-0.5">Permanently delete:</p>
+              <p className="font-semibold text-neutral-900 line-clamp-2">
+                &ldquo;{postToDelete.title}&rdquo;
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-1">
+              <button
+                type="button"
+                disabled={isDeletingPost}
+                onClick={() => setPostToDelete(null)}
+                className="px-3.5 py-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 text-xs font-mono text-neutral-700 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={isDeletingPost}
+                onClick={confirmDeletePost}
+                className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-mono font-medium transition flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+              >
+                {isDeletingPost ? (
+                  <>
+                    <RefreshCw className="w-3 h-3 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3 h-3" />
+                    <span>Delete</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
