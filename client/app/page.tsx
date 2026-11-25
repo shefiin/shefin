@@ -15,6 +15,8 @@ interface Project {
   status: 'Active' | 'Sold' | 'Building' | 'Beta' | 'Open Source' | string;
   iconKey: string;
   link?: string;
+  sourceCode?: string;
+  tags?: string[];
 }
 
 interface BlogPost {
@@ -98,32 +100,27 @@ const defaultTechStack: TechItem[] = [
 
 const defaultProjects: Project[] = [
   {
-    title: 'Project Y',
-    description: 'My new project that I work on in stealth mode for now...',
+    title: 'CureHome— Telehealth platform',
+    description: 'Telehealth platform with microservices architecture, gRPC inter-service communication, and NATS event-driven messaging.',
     status: 'Active',
-    iconKey: 'mic',
-    link: 'https://projecty.dev',
-  },
-  {
-    title: 'Listing Cat',
-    description: 'Marketing database for startups and indie hackers.',
-    status: 'Active',
-    iconKey: 'cat',
-    link: 'https://listingcat.com',
-  },
-  {
-    title: 'Bluesky Meter',
-    description: 'Realtime analytics for Bluesky social network.',
-    status: 'Sold',
-    iconKey: 'bluesky',
-    link: 'https://blueskymeter.com',
-  },
-  {
-    title: 'MERN Stack Suite',
-    description: 'High performance web applications with Next.js, Express, and MongoDB.',
-    status: 'Active',
-    iconKey: 'database',
-    link: 'https://github.com/shefiin',
+    iconKey: 'curehome',
+    link: 'https://github.com/shefiin/telehealth',
+    sourceCode: 'https://github.com/shefiin/telehealth',
+    tags: [
+      'typescript',
+      'react',
+      'gRPC',
+      'nats',
+      'docker sandbox',
+      'postgres',
+      'PostgreSQL',
+      'redis',
+      'prometheus',
+      'grafana',
+      'aws',
+      'gcp',
+      'kubernetes',
+    ],
   },
 ];
 
@@ -257,35 +254,41 @@ export default function Home() {
         </div>
 
         {/* Greeting & Name */}
-        <h1 className="text-[26px] font-sans font-bold tracking-tight text-neutral-900 mb-5 leading-tight flex items-baseline gap-1.5 flex-wrap">
+        <h1 className="text-[26px] font-sans font-bold tracking-tight text-neutral-900 mb-6 leading-tight flex items-baseline gap-1.5 flex-wrap">
           <span>Hey, I&apos;m</span>
           <span className="text-[#d97706] border-b-2 border-[#f59e0b] pb-0.5">
             {profile.highlightWord || 'Shefin!'}
           </span>
         </h1>
 
-        {/* Bio paragraphs in clean monospace */}
-        <div className="space-y-2 text-[13.5px] text-neutral-800 leading-relaxed font-mono mb-12">
-          <p>
-            Software Engineer based in {profile.location}{' '}
-            <span className="inline-block">{profile.countryFlag}</span>
-          </p>
+        {/* FIND ME ON (Directly after Hey Shefin) */}
+        <section className="mb-10">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+            FIND ME ON
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {profile.socials.map((item) => (
+              <a
+                key={item.platform}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
+              >
+                <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
+                <span>{item.platform}</span>
+              </a>
+            ))}
+          </div>
+        </section>
 
-          <p>
-            I engineer end-to-end web applications, robust backend APIs, and distributed systems across the modern TypeScript, Node, and database ecosystem.
-          </p>
-        </div>
-
-        {/* SECTION 1: PROJECTS (Top Priority) */}
+        {/* SECTION 1: PROJECTS */}
         <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
             PROJECTS
           </h2>
-          <p className="text-xs font-mono text-neutral-700 mb-3.5">
-            These are my personal projects, both past and ongoing:
-          </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-4">
             {projects.map((project, idx) => {
               const isActive = project.status?.toLowerCase() === 'active';
               const isSold = project.status?.toLowerCase() === 'sold';
@@ -293,53 +296,74 @@ export default function Home() {
               return (
                 <div
                   key={project._id || idx}
-                  className="group border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all shadow-2xs relative flex flex-col justify-between"
+                  className="group border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all shadow-2xs"
                 >
-                  <div>
-                    {/* Header: Icon + Title + Status */}
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800" />
-                        <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition">
-                          {project.title}
-                        </h3>
+                  {/* Header: [Title] [source code: url] and Status */}
+                  <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap text-[13px] font-mono">
+                      <div className="flex items-center gap-1.5 font-semibold text-neutral-900 group-hover:text-amber-700 transition">
+                        <ProjectIcon iconKey={project.iconKey} className="w-4 h-4 text-neutral-800 shrink-0" />
+                        <a
+                          href={project.link || project.sourceCode || 'https://github.com/shefiin/telehealth'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline"
+                        >
+                          [{project.title}]
+                        </a>
                       </div>
 
-                      {/* Status Badge */}
-                      {isActive && (
-                        <span className="bg-[#eaf8f0] text-[#008744] border border-[#bdedd0] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium">
-                          Active
-                        </span>
-                      )}
-                      {isSold && (
-                        <span className="bg-[#fff1e5] text-[#b44800] border border-[#fed7aa] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium">
-                          Sold
-                        </span>
-                      )}
-                      {!isActive && !isSold && (
-                        <span className="bg-neutral-100 text-neutral-700 border border-neutral-200 text-[10px] font-mono px-2 py-0.5 rounded-full font-medium">
-                          {project.status}
-                        </span>
+                      {project.sourceCode && (
+                        <a
+                          href={project.sourceCode}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-neutral-500 hover:text-neutral-900 text-[11.5px] transition underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-600 inline-flex items-center gap-0.5"
+                        >
+                          <span>[source code: {project.sourceCode}]</span>
+                          <ArrowUpRight className="w-3 h-3 text-neutral-400 inline" />
+                        </a>
                       )}
                     </div>
 
-                    {/* Description */}
-                    <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
-                      {project.description}
-                    </p>
+                    {/* Status Badge */}
+                    {isActive && (
+                      <span className="bg-[#eaf8f0] text-[#008744] border border-[#bdedd0] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
+                        Active
+                      </span>
+                    )}
+                    {isSold && (
+                      <span className="bg-[#fff1e5] text-[#b44800] border border-[#fed7aa] text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
+                        Sold
+                      </span>
+                    )}
+                    {!isActive && !isSold && project.status && (
+                      <span className="bg-neutral-100 text-neutral-700 border border-neutral-200 text-[10px] font-mono px-2 py-0.5 rounded-full font-medium shrink-0">
+                        {project.status}
+                      </span>
+                    )}
                   </div>
 
-                  {project.link && project.link !== '#' && (
-                    <div className="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-end">
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-mono text-neutral-400 hover:text-neutral-800 inline-flex items-center gap-0.5 transition"
-                      >
-                        <span>Visit</span>
-                        <ArrowUpRight className="w-3 h-3" />
-                      </a>
+                  {/* Description if present */}
+                  {project.description && (
+                    <p className="text-[12px] font-mono text-neutral-600 leading-relaxed mb-3">
+                      {project.description}
+                    </p>
+                  )}
+
+                  {/* Tech Stack Tags */}
+                  {project.tags && project.tags.length > 0 && (
+                    <div className="pt-2 border-t border-neutral-100">
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10.5px] font-mono px-2 py-0.5 rounded bg-neutral-100/80 text-neutral-700 border border-neutral-200/60"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -348,11 +372,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 2: BLOG */}
+        {/* SECTION 2: WRITING */}
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium">
-              BLOG
+              WRITING
             </h2>
             <a
               href="https://substack.com/@shefin204168"
@@ -364,9 +388,6 @@ export default function Home() {
               <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
-          <p className="text-xs font-mono text-neutral-700 mb-3.5">
-            Technical writing on software systems, databases, and engineering:
-          </p>
 
           <div className="space-y-3">
             {posts.map((post, idx) => (
@@ -413,12 +434,9 @@ export default function Home() {
 
         {/* SECTION 3: TECH STACK */}
         <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
             TECH STACK
           </h2>
-          <p className="text-xs font-mono text-neutral-700 mb-3.5">
-            The technologies and tools I work with:
-          </p>
 
           <div className="flex flex-wrap gap-2">
             {techStack.map((tech) => (
@@ -433,34 +451,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 4: FIND ME ON */}
-        <section className="mb-12">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
-            FIND ME ON
-          </h2>
-          <p className="text-xs font-mono text-neutral-700 mb-3.5">
-            You can find me on the following social platforms:
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {profile.socials.map((item) => (
-              <a
-                key={item.platform}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
-              >
-                <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
-                <span>{item.platform}</span>
-              </a>
-            ))}
-          </div>
-        </section>
-
         {/* SECTION 4: GET IN TOUCH */}
         <section className="mb-14">
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2">
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
             GET IN TOUCH
           </h2>
           <div className="space-y-1 text-xs font-mono text-neutral-700">

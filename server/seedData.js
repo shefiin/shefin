@@ -44,36 +44,28 @@ const initialTechStack = [
 
 const initialProjects = [
   {
-    title: "Project Y",
-    description: "My new project that I work on in stealth mode for now...",
+    title: "CureHome— Telehealth platform",
+    description: "Telehealth platform with microservices architecture, gRPC inter-service communication, and NATS event-driven messaging.",
     status: "Active",
-    iconKey: "mic",
-    link: "https://projecty.dev",
+    iconKey: "curehome",
+    link: "https://github.com/shefiin/telehealth",
+    sourceCode: "https://github.com/shefiin/telehealth",
+    tags: [
+      "typescript",
+      "react",
+      "gRPC",
+      "nats",
+      "docker sandbox",
+      "postgres",
+      "PostgreSQL",
+      "redis",
+      "prometheus",
+      "grafana",
+      "aws",
+      "gcp",
+      "kubernetes"
+    ],
     order: 1
-  },
-  {
-    title: "Listing Cat",
-    description: "Marketing database for startups and indie hackers.",
-    status: "Active",
-    iconKey: "cat",
-    link: "https://listingcat.com",
-    order: 2
-  },
-  {
-    title: "Bluesky Meter",
-    description: "Realtime analytics for Bluesky social network.",
-    status: "Sold",
-    iconKey: "bluesky",
-    link: "https://blueskymeter.com",
-    order: 3
-  },
-  {
-    title: "MERN Stack Suite",
-    description: "High performance web applications with Next.js, Express, and MongoDB.",
-    status: "Active",
-    iconKey: "database",
-    link: "https://github.com/shefiin",
-    order: 4
   }
 ];
 
@@ -118,24 +110,29 @@ async function seedDatabase() {
     const techCount = await TechStack.countDocuments();
     if (techCount === 0) {
       await TechStack.insertMany(initialTechStack);
-      console.log('🌱 Seeded initial tech stack');
+      console.log(`🌱 Seeded ${initialTechStack.length} tech stack items`);
     }
 
     const projectCount = await Project.countDocuments();
     if (projectCount === 0) {
       await Project.insertMany(initialProjects);
-      console.log('🌱 Seeded initial projects');
+      console.log(`🌱 Seeded ${initialProjects.length} initial projects`);
     }
 
     const postCount = await Post.countDocuments();
     if (postCount === 0) {
       await Post.insertMany(initialPosts);
-      console.log('🌱 Seeded initial blog posts');
+      console.log(`🌱 Seeded ${initialPosts.length} initial blog posts`);
     }
   } catch (error) {
-    console.error('Error seeding database:', error);
+    console.error('Seed error:', error);
   }
 }
 
-module.exports = { seedDatabase, initialProfile, initialTechStack, initialProjects, initialPosts };
-
+module.exports = {
+  seedDatabase,
+  initialProfile,
+  initialTechStack,
+  initialProjects,
+  initialPosts
+};

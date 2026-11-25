@@ -10,6 +10,8 @@ interface Project {
   status: string;
   iconKey: string;
   link?: string;
+  sourceCode?: string;
+  tags?: string[];
 }
 
 interface BlogPost {
@@ -56,8 +58,10 @@ export function AdminDrawer({
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newStatus, setNewStatus] = useState('Active');
-  const [newIcon, setNewIcon] = useState('code');
+  const [newIcon, setNewIcon] = useState('curehome');
   const [newLink, setNewLink] = useState('');
+  const [newSourceCode, setNewSourceCode] = useState('');
+  const [newTags, setNewTags] = useState('');
   const [submittingProject, setSubmittingProject] = useState(false);
 
   // New blog post state
@@ -122,6 +126,10 @@ export function AdminDrawer({
     e.preventDefault();
     setSubmittingProject(true);
     try {
+      const tagsArray = newTags
+        ? newTags.split(',').map((t) => t.trim()).filter(Boolean)
+        : [];
+
       const res = await fetch('http://localhost:5001/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -130,13 +138,17 @@ export function AdminDrawer({
           description: newDesc,
           status: newStatus,
           iconKey: newIcon,
-          link: newLink || '#'
+          link: newLink || '#',
+          sourceCode: newSourceCode,
+          tags: tagsArray
         })
       });
       if (res.ok) {
         setNewTitle('');
         setNewDesc('');
         setNewLink('');
+        setNewSourceCode('');
+        setNewTags('');
         setActionNotice('Project added to MongoDB successfully!');
         setTimeout(() => setActionNotice(null), 3000);
         onDataRefresh();
@@ -424,12 +436,39 @@ export function AdminDrawer({
                     onChange={(e) => setNewIcon(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white"
                   >
+                    <option value="curehome">Activity / Telehealth</option>
                     <option value="mic">Mic / Audio</option>
                     <option value="cat">Cat / Mascot</option>
                     <option value="bluesky">Bluesky Butterfly</option>
                     <option value="database">Database</option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-neutral-600 mb-1">
+                  Source Code URL (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newSourceCode}
+                  onChange={(e) => setNewSourceCode(e.target.value)}
+                  placeholder="https://github.com/..."
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-neutral-600 mb-1">
+                  Tech Stack Tags (Comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={newTags}
+                  onChange={(e) => setNewTags(e.target.value)}
+                  placeholder="typescript, react, gRPC, nats, docker sandbox..."
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                />
               </div>
 
               <div>

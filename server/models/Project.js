@@ -10,10 +10,11 @@ const projectSchema = new mongoose.Schema({
   },
   iconKey: { type: String, default: 'code' },
   link: { type: String, default: '#' },
+  sourceCode: { type: String, default: '' },
   github: { type: String, default: '' },
+  tags: [{ type: String }],
   featured: { type: Boolean, default: true },
   order: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Project', projectSchema);
-

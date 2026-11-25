@@ -1,8 +1,12 @@
 import React from 'react';
-import { Mic, Database } from 'lucide-react';
+import { Mic, Database, Activity } from 'lucide-react';
 
 export function ProjectIcon({ iconKey, className = "w-4 h-4 text-neutral-800" }: { iconKey: string; className?: string }) {
   switch (iconKey.toLowerCase()) {
+    case 'curehome':
+    case 'telehealth':
+    case 'activity':
+      return <Activity className={className} />;
     case 'mic':
       return <Mic className={className} />;
     case 'cat':
@@ -20,7 +24,6 @@ export function ProjectIcon({ iconKey, className = "w-4 h-4 text-neutral-800" }:
     case 'database':
       return <Database className={className} />;
     default:
-      return <Database className={className} />;
+      return <Activity className={className} />;
   }
 }
-
