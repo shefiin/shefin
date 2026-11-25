@@ -133,6 +133,17 @@ For decoupled workflows like sending prescription notifications or audit logs, s
   }
 };
 
+// Helper to detect if image caption/alt is merely an uploaded filename
+function isRawFileName(str: string): boolean {
+  if (!str) return true;
+  const s = str.trim();
+  if (!s || s.toLowerCase() === 'post media' || s.toLowerCase() === 'image' || s.toLowerCase() === 'article illustration') return true;
+  if (/\.(png|jpe?g|gif|webp|svg|bmp|avif|tiff|heic)$/i.test(s)) return true;
+  if (/^(image|img|screenshot|screen|file|media|photo|pasted|blob|untitled)[_-\d\s.]*$/i.test(s)) return true;
+  if (/^[a-f0-9\-_]{12,}$/i.test(s)) return true;
+  return false;
+}
+
 // Formats inline markdown (bold, code)
 function formatInlineText(text: string) {
   const parts: React.ReactNode[] = [];
@@ -238,19 +249,47 @@ function MarkdownBody({ content }: { content: string }) {
     // Image or animated GIF: ![alt](url)
     const imgMatch = line.match(/^!\[(.*?)\]\((.*?)\)/);
     if (imgMatch) {
+      const rawCaption = imgMatch[1]?.trim() || '';
+      const hasCaption = rawCaption && !isRawFileName(rawCaption);
       elements.push(
         <figure key={`img-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/90 bg-neutral-50/40 shadow-2xs">
           <div className="w-full max-h-[460px] flex items-center justify-center p-1 sm:p-2 bg-neutral-100/30">
             <img
               src={imgMatch[2]}
-              alt={imgMatch[1] || 'Post media'}
+              alt={hasCaption ? rawCaption : 'Article illustration'}
               className="w-full h-auto max-h-[440px] object-contain rounded-lg mx-auto"
               loading="lazy"
             />
           </div>
-          {imgMatch[1] && (
-            <figcaption className="text-center text-[11px] font-mono text-neutral-400 py-1.5 border-t border-neutral-100 bg-white/70">
-              {imgMatch[1]}
+          {hasCaption && (
+            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2 px-4 border-t border-neutral-100 bg-white/80">
+              {rawCaption}
+            </figcaption>
+          )}
+        </figure>
+      );
+      continue;
+    }
+
+    // HTML Figure tag with optional figcaption
+    const figureMatch = line.match(/<figure[^>]*>[\s\S]*?<img[^>]*src=["'](.*?)["'][^>]*>[\s\S]*?(?:<figcaption[^>]*>(.*?)<\/figcaption>)?[\s\S]*?<\/figure>/i);
+    if (figureMatch) {
+      const src = figureMatch[1];
+      const rawCaption = (figureMatch[2] || '').trim();
+      const hasCaption = rawCaption && !isRawFileName(rawCaption);
+      elements.push(
+        <figure key={`fig-${i}`} className="my-6 rounded-xl overflow-hidden border border-neutral-200/90 bg-neutral-50/40 shadow-2xs">
+          <div className="w-full max-h-[460px] flex items-center justify-center p-1 sm:p-2 bg-neutral-100/30">
+            <img
+              src={src}
+              alt={hasCaption ? rawCaption : 'Article illustration'}
+              className="w-full h-auto max-h-[440px] object-contain rounded-lg mx-auto"
+              loading="lazy"
+            />
+          </div>
+          {hasCaption && (
+            <figcaption className="text-center text-[11px] font-mono text-neutral-500 py-2 px-4 border-t border-neutral-100 bg-white/80">
+              {rawCaption}
             </figcaption>
           )}
         </figure>
