@@ -325,6 +325,9 @@ app.get('/api/posts/:slugOrId', async (req, res) => {
     if (!post) {
       post = await Post.findOne({ slug: slugOrId });
     }
+    if (!post && slugOrId.length >= 6) {
+      post = await Post.findOne({ slug: new RegExp(`-${slugOrId}$`, 'i') });
+    }
     if (!post) {
       post = initialPosts.find(p => p.slug === slugOrId || p._id === slugOrId);
     }
@@ -339,17 +342,25 @@ app.get('/api/posts/:slugOrId', async (req, res) => {
   }
 });
 
-// Helper to ensure a unique slug by appending incremental count (-1, -2, etc.)
+const crypto = require('crypto');
+
+function generateShortId(length = 6) {
+  return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
+}
+
+// Helper to ensure every post slug has a clean unique ID suffix (e.g. title-a1b2c3)
 async function generateUniqueSlug(baseText, existingPostId = null) {
-  let baseSlug = (baseText || 'untitled')
+  let cleanText = (baseText || 'untitled')
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'post';
 
-  let candidate = baseSlug;
-  let counter = 1;
+  // Check if it already has a trailing 6-character alphanumeric unique ID
+  const hasUniqueId = /-[a-z0-9]{6}$/.test(cleanText);
+  let baseSlug = hasUniqueId ? cleanText.slice(0, -7) : cleanText;
+  let candidate = hasUniqueId ? cleanText : `${cleanText}-${generateShortId(6)}`;
 
   while (true) {
     const query = { slug: candidate };
@@ -360,8 +371,7 @@ async function generateUniqueSlug(baseText, existingPostId = null) {
     if (!exists) {
       return candidate;
     }
-    candidate = `${baseSlug}-${counter}`;
-    counter++;
+    candidate = `${baseSlug}-${generateShortId(6)}`;
   }
 }
 

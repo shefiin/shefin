@@ -263,12 +263,14 @@ export function AdminDrawer({
         ? newPostTags.split(',').map((t) => t.trim()).filter(Boolean)
         : [];
 
-      const generatedSlug = newPostTitle
+      const shortId = Math.random().toString(36).substring(2, 8);
+      const cleanSlug = newPostTitle
         .toLowerCase()
         .trim()
         .replace(/[^\w\s-]/g, '')
         .replace(/[\s_-]+/g, '-')
         .replace(/^-+|-+$/g, '');
+      const generatedSlug = cleanSlug ? `${cleanSlug}-${shortId}` : shortId;
 
       const res = await fetch('http://localhost:5001/api/posts', {
         method: 'POST',

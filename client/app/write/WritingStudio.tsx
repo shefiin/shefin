@@ -84,14 +84,18 @@ export default function WritingStudio() {
     router.replace('/login');
   };
 
-  // Auto-slug generator from title
+  // Unique random short ID for new article slug (Medium/Substack pattern)
+  const [articleShortId] = useState(() => Math.random().toString(36).substring(2, 8));
+
+  // Auto-slug generator from title with unique ID suffix
   const generateSlug = (text: string) => {
-    return text
+    const base = text
       .toLowerCase()
       .trim()
       .replace(/[^\w\s-]/g, '')
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
+    return base ? `${base}-${articleShortId}` : '';
   };
 
   // If editing an existing article, fetch its details
@@ -381,6 +385,11 @@ export default function WritingStudio() {
                   placeholder="Article Title..."
                   className="w-full text-2xl sm:text-3xl font-sans font-bold text-neutral-900 placeholder:text-neutral-300 focus:outline-none bg-transparent tracking-tight"
                 />
+                {slug && (
+                  <p className="text-[11px] font-mono text-neutral-400 mt-1 truncate">
+                    URL: <span className="text-neutral-600">/writing/{slug}</span>
+                  </p>
+                )}
               </div>
 
               {/* Description / Summary */}
