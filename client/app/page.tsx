@@ -272,14 +272,14 @@ export default function Home() {
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-2.5">
             FIND ME ON
           </h2>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {profile.socials.map((item) => (
               <a
                 key={item.platform}
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-[2px] leading-tight rounded-md border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[11.5px] font-mono text-neutral-800 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors shadow-2xs"
               >
                 <SocialIcon platform={item.platform} className="w-3.5 h-3.5" />
                 <span>{item.platform}</span>
