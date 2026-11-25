@@ -36,3 +36,98 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #d4d4d4;
 }
+
+/* TipTap Editor & Prose Styles */
+.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #a3a3a3;
+  pointer-events: none;
+  height: 0;
+  font-family: inherit;
+}
+
+.prose-custom h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #171717;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.prose-custom h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #171717;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.prose-custom p {
+  margin-bottom: 0.85rem;
+  color: #262626;
+  line-height: 1.7;
+}
+
+.prose-custom ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.prose-custom ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.prose-custom li {
+  margin-bottom: 0.25rem;
+  color: #374151;
+}
+
+.prose-custom blockquote {
+  border-left: 3px solid #f59e0b;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #4b5563;
+  margin: 1.25rem 0;
+}
+
+.prose-custom code {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+.prose-custom pre {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border: 1px solid #1f2937;
+}
+
+.prose-custom pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.prose-custom hr {
+  border-color: #e5e7eb;
+  margin: 2rem 0;
+}

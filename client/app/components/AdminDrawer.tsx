@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Database, RefreshCw, Plus, CheckCircle, Mail, Globe, Server, Check, BookOpen, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { X, Database, RefreshCw, Plus, CheckCircle, Mail, Globe, Server, Check, BookOpen, Trash2, Edit3, PenLine } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -18,11 +19,13 @@ interface Project {
 interface BlogPost {
   _id?: string;
   title: string;
+  slug?: string;
   description: string;
   date: string;
   readTime: string;
   link?: string;
   tags?: string[];
+  content?: string;
 }
 
 interface Message {
@@ -169,14 +172,21 @@ export function AdminDrawer({
         ? newPostTags.split(',').map((t) => t.trim()).filter(Boolean)
         : [];
 
+      const generatedSlug = newPostTitle
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
       const res = await fetch('http://localhost:5001/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newPostTitle,
+          slug: generatedSlug,
           description: newPostDesc,
           tags: tagsArray,
-          link: newPostLink || 'https://substack.com/@shefin204168',
           readTime: newPostReadTime || '5 min read',
           date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
         })
@@ -497,9 +507,33 @@ export function AdminDrawer({
 
           {activeTab === 'posts' && (
             <div className="space-y-4">
+              {/* Dedicated Writing Studio Promo Card */}
+              <Link
+                href="/write"
+                onClick={onClose}
+                className="flex items-center justify-between p-3.5 rounded-xl border border-amber-300/80 bg-gradient-to-r from-amber-50/70 to-orange-50/70 hover:from-amber-100/70 hover:to-orange-100/70 transition group shadow-2xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-700">
+                    <PenLine className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-800 transition">
+                      Open Writing Studio
+                    </p>
+                    <p className="text-[10.5px] font-mono text-neutral-500">
+                      Medium/Notion-style rich editor with live formatting
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-mono text-amber-700 font-semibold group-hover:translate-x-0.5 transition-transform">
+                  Launch →
+                </span>
+              </Link>
+
               <form onSubmit={handleAddPost} className="space-y-3 p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50">
                 <p className="text-xs font-mono text-neutral-700 font-semibold">
-                  Publish New Blog Post to MongoDB
+                  Quick Publish to MongoDB
                 </p>
 
                 <div>
@@ -558,25 +592,12 @@ export function AdminDrawer({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-mono text-neutral-600 mb-1">
-                    Article Link (Substack or External)
-                  </label>
-                  <input
-                    type="text"
-                    value={newPostLink}
-                    onChange={(e) => setNewPostLink(e.target.value)}
-                    placeholder="https://substack.com/..."
-                    className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-neutral-200 bg-white focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                  />
-                </div>
-
                 <button
                   type="submit"
                   disabled={submittingPost}
                   className="w-full mt-1 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-mono rounded-lg transition disabled:opacity-50"
                 >
-                  {submittingPost ? 'Saving...' : '+ Publish to MongoDB'}
+                  {submittingPost ? 'Saving...' : '+ Quick Publish'}
                 </button>
               </form>
 
@@ -622,15 +643,25 @@ export function AdminDrawer({
                           {post.description}
                         </p>
                       </div>
-                      {post._id && (
-                        <button
-                          onClick={() => handleDeletePost(post._id!)}
-                          className="p-1 text-neutral-400 hover:text-red-600 transition shrink-0"
-                          title="Delete from MongoDB"
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Link
+                          href={`/write?slug=${post.slug || post._id}`}
+                          onClick={onClose}
+                          className="p-1 text-neutral-400 hover:text-amber-700 transition"
+                          title="Edit in Writing Studio"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </Link>
+                        {post._id && (
+                          <button
+                            onClick={() => handleDeletePost(post._id!)}
+                            className="p-1 text-neutral-400 hover:text-red-600 transition"
+                            title="Delete from MongoDB"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}

@@ -205,9 +205,26 @@ app.get('/api/posts/:slugOrId', async (req, res) => {
 
 app.post('/api/posts', async (req, res) => {
   try {
-    const post = new Post(req.body);
+    const postData = { ...req.body };
+    if (!postData.slug && postData.title) {
+      postData.slug = postData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+    }
+    const post = new Post(postData);
     await post.save();
     res.status(201).json(post);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/api/posts/:id', async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    res.json(post);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

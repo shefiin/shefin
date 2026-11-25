@@ -341,7 +341,14 @@ export default function ArticleView({ slug }: { slug: string }) {
 
         {/* Article Body */}
         <article>
-          <MarkdownBody content={post.content || ''} />
+          {post.content && post.content.trim().startsWith('<') ? (
+            <div
+              className="article-body prose-custom text-[14.5px] font-sans text-neutral-800 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          ) : (
+            <MarkdownBody content={post.content || ''} />
+          )}
         </article>
 
         {/* Footer */}
@@ -373,9 +380,18 @@ export default function ArticleView({ slug }: { slug: string }) {
             <span>Back to portfolio</span>
           </Link>
 
-          <span className="text-[11px] text-neutral-400 font-mono">
-            Kerala, India
-          </span>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/write?slug=${post.slug}`}
+              className="text-[11px] text-neutral-400 hover:text-neutral-800 transition font-mono"
+            >
+              Edit in studio ↗
+            </Link>
+            <span className="text-neutral-300">•</span>
+            <span className="text-[11px] text-neutral-400 font-mono">
+              Kerala, India
+            </span>
+          </div>
         </div>
       </main>
     </div>
