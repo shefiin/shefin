@@ -190,7 +190,7 @@ function WritingsList() {
   const standalonePostsCount = posts.filter((p) => !p.project || !p.project.trim()).length;
 
   return (
-    <div className="max-w-[620px] mx-auto py-16 px-6 sm:px-8 font-mono text-neutral-900 selection:bg-amber-100">
+    <div className="max-w-[620px] mx-auto">
       {/* Top Navigation */}
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
         <Link
@@ -353,12 +353,12 @@ function WritingsList() {
                   </div>
 
                   {/* Articles in this project series */}
-                  <div className="space-y-2.5 pl-1 sm:pl-2">
+                  <div className="space-y-3">
                     {groupPosts.map((post) => (
                       <Link
                         key={post._id || post.slug}
                         href={`/writing/${post.slug}`}
-                        className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-300 hover:shadow-2xs transition-all"
+                        className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <div className="flex items-center gap-2 text-[10.5px] text-neutral-400">
@@ -417,12 +417,12 @@ function WritingsList() {
                 </span>
               </div>
 
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {standalonePosts.map((post) => (
                   <Link
                     key={post._id || post.slug}
                     href={`/writing/${post.slug}`}
-                    className="group block p-3.5 rounded-xl border border-neutral-200/90 bg-white hover:border-neutral-300 hover:shadow-2xs transition-all"
+                    className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 text-[10.5px] text-neutral-400">
@@ -466,8 +466,8 @@ function WritingsList() {
 
 export default function WritingIndexPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <Suspense fallback={<div className="max-w-[620px] mx-auto py-16 px-6 font-mono text-xs text-neutral-400">Loading writings...</div>}>
+    <main className="min-h-screen bg-white text-neutral-900 font-mono py-16 px-6 sm:px-8 selection:bg-amber-100">
+      <Suspense fallback={<div className="max-w-[620px] mx-auto font-mono text-xs text-neutral-400">Loading writings...</div>}>
         <WritingsList />
       </Suspense>
     </main>
