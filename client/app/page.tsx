@@ -7,7 +7,7 @@ import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
 import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
-import { ArrowUpRight, ArrowRight, PenLine, User } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, PenLine, User, FileText } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -53,6 +53,7 @@ interface ProfileData {
   availabilityText: string;
   email: string;
   calLink: string;
+  cvUrl?: string;
   socials: Array<{
     platform: string;
     url: string;
@@ -73,6 +74,7 @@ const defaultProfile: ProfileData = {
   availabilityText: "Open to engineering opportunities & collaborations",
   email: 'shefinptr@gmail.com',
   calLink: 'https://cal.com/shefin',
+  cvUrl: '/cv.pdf',
   socials: [
     { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/shefin-kp/', iconKey: 'linkedin' },
     { platform: 'GitHub', url: 'https://github.com/shefiin', iconKey: 'github' },
@@ -339,6 +341,15 @@ export default function Home() {
                 <span>{item.platform}</span>
               </a>
             ))}
+            <a
+              href={profile.cvUrl || '/cv.pdf'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-neutral-200/80 bg-neutral-50/60 hover:bg-neutral-100/90 text-[12px] font-mono text-neutral-800 transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5 text-neutral-700" />
+              <span>CV</span>
+            </a>
           </div>
         </section>
 
