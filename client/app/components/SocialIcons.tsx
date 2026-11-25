@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: string; className?: string }) {
   const p = platform.toLowerCase();
@@ -21,9 +22,13 @@ export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: 
 
   if (p.includes('bluesky')) {
     return (
-      <svg viewBox="0 0 568 501" className={className} fill="#0285FF">
-        <path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.209C492.376-1.956 568 -27.818 568 58.788c0 17.305-9.875 145.47-15.688 166.236-20.219 72.222-93.85 90.627-159.206 79.524 114.28 19.467 143.515 83.743 80.609 148.067-75.765 77.472-167.319-38.309-183.097-78.718-2.617-6.702-3.87-9.897-6.618-9.897-2.748 0-4.001 3.195-6.618 9.897-15.778 40.409-107.332 156.19-183.097 78.718-62.906-64.324-33.671-128.6-80.609-148.067C136.738 315.651 63.107 297.246 42.888 225.024 37.075 204.258 27.2 76.093 27.2 58.788 27.2-27.818 102.824-1.956 123.121 33.664Z"/>
-      </svg>
+      <Image
+        src="/bluesky.webp"
+        alt="Bluesky"
+        width={14}
+        height={14}
+        className={`${className} object-contain rounded-xs`}
+      />
     );
   }
 
