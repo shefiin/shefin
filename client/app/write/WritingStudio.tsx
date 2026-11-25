@@ -18,7 +18,8 @@ import {
   X,
   LogOut,
   ShieldCheck,
-  RefreshCw
+  RefreshCw,
+  FolderGit2
 } from 'lucide-react';
 import {
   getAuthHeaders,
@@ -58,6 +59,10 @@ export default function WritingStudio() {
   const [tags, setTags] = useState<string[]>(['Engineering']);
   const [tagInput, setTagInput] = useState('');
   const [readTime, setReadTime] = useState('3 min read');
+  const [project, setProject] = useState<string>('');
+  const [seriesOrder, setSeriesOrder] = useState<number | ''>('');
+  const [availableProjects, setAvailableProjects] = useState<Array<{ _id?: string; title: string }>>([]);
+  const [isCustomProject, setIsCustomProject] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -98,6 +103,18 @@ export default function WritingStudio() {
     return base ? `${base}-${articleShortId}` : '';
   };
 
+  // Fetch available projects to populate Group / Series selector
+  useEffect(() => {
+    fetch('http://localhost:5001/api/projects')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAvailableProjects(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // If editing an existing article, fetch its details
   useEffect(() => {
     if (editSlug) {
@@ -113,6 +130,8 @@ export default function WritingStudio() {
             setContent(data.content || '');
             setTags(Array.isArray(data.tags) ? data.tags : []);
             setReadTime(data.readTime || '4 min read');
+            setProject(data.project || '');
+            setSeriesOrder(typeof data.seriesOrder === 'number' && data.seriesOrder > 0 ? data.seriesOrder : '');
           }
         })
         .catch(() => {})
@@ -167,6 +186,8 @@ export default function WritingStudio() {
       slug: slug.trim() || generateSlug(title),
       content,
       tags: tags.length ? tags : ['Engineering'],
+      project: project.trim(),
+      seriesOrder: seriesOrder ? Number(seriesOrder) : 0,
       readTime: readTime || '3 min read',
       date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
     };
@@ -341,6 +362,17 @@ export default function WritingStudio() {
               </span>
             </div>
 
+            {/* Project / Series Badge in Preview */}
+            {project && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200/80 text-[11px] font-mono text-amber-800 mb-3">
+                <FolderGit2 className="w-3.5 h-3.5 text-amber-600" />
+                <span>
+                  Part of series: <strong>{project}</strong>
+                  {seriesOrder ? ` (Part ${seriesOrder})` : ''}
+                </span>
+              </div>
+            )}
+
             <h1 className="text-2xl sm:text-[26px] font-sans font-bold text-neutral-900 tracking-tight leading-snug mb-3">
               {title || 'Untitled Post'}
             </h1>
@@ -389,6 +421,72 @@ export default function WritingStudio() {
                   <p className="text-[11px] font-mono text-neutral-400 mt-1 truncate">
                     URL: <span className="text-neutral-600">/writing/{slug}</span>
                   </p>
+                )}
+              </div>
+
+              {/* Project / Series Selector */}
+              <div className="pt-2 pb-1 border-t border-neutral-100 flex flex-wrap items-center gap-2.5 text-xs font-mono">
+                <div className="flex items-center gap-1.5 text-neutral-500">
+                  <FolderGit2 className="w-3.5 h-3.5 text-amber-600" />
+                  <span className="font-medium text-[11.5px]">Group / Series:</span>
+                </div>
+
+                {!isCustomProject ? (
+                  <select
+                    value={project}
+                    onChange={(e) => {
+                      if (e.target.value === '__custom__') {
+                        setIsCustomProject(true);
+                        setProject('');
+                      } else {
+                        setProject(e.target.value);
+                      }
+                    }}
+                    className="px-2.5 py-1 rounded-lg border border-neutral-200/90 bg-neutral-50 text-neutral-800 text-xs font-mono focus:outline-none focus:border-neutral-400 cursor-pointer"
+                  >
+                    <option value="">Standalone / General Writing</option>
+                    {availableProjects.map((p) => (
+                      <option key={p._id || p.title} value={p.title}>
+                        Project: {p.title}
+                      </option>
+                    ))}
+                    <option value="__custom__">+ Enter custom project / series...</option>
+                  </select>
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={project}
+                      onChange={(e) => setProject(e.target.value)}
+                      placeholder="Project or series name..."
+                      className="px-2.5 py-1 rounded-lg border border-neutral-300 bg-white text-neutral-800 text-xs font-mono focus:outline-none focus:border-amber-500"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCustomProject(false);
+                        setProject('');
+                      }}
+                      className="text-[11px] text-neutral-400 hover:text-neutral-700 underline px-1"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+
+                {project && (
+                  <div className="flex items-center gap-1.5 ml-1">
+                    <span className="text-neutral-400 text-[11px]">Part #:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={seriesOrder}
+                      onChange={(e) => setSeriesOrder(e.target.value ? Number(e.target.value) : '')}
+                      placeholder="e.g. 1"
+                      className="w-16 px-2 py-1 rounded-lg border border-neutral-200/90 bg-neutral-50 text-neutral-800 text-xs font-mono focus:outline-none focus:border-neutral-400"
+                    />
+                  </div>
                 )}
               </div>
 

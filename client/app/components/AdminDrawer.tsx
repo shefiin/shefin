@@ -37,6 +37,8 @@ interface BlogPost {
   readTime: string;
   link?: string;
   tags?: string[];
+  project?: string;
+  seriesOrder?: number;
   content?: string;
 }
 

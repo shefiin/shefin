@@ -7,7 +7,7 @@ import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
 import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
-import { ArrowUpRight, ArrowRight, PenLine, User, FileText } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, PenLine, User, FileText, FolderGit2 } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -30,6 +30,8 @@ interface BlogPost {
   readTime: string;
   link?: string;
   tags?: string[];
+  project?: string;
+  seriesOrder?: number;
   content?: string;
 }
 
@@ -442,6 +444,12 @@ export default function Home() {
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
+                      {post.project && (
+                        <span className="px-1.5 py-[1px] rounded bg-amber-50 text-amber-900 border border-amber-200/70 text-[10px] font-semibold">
+                          {post.project}
+                          {post.seriesOrder ? ` • Part ${post.seriesOrder}` : ''}
+                        </span>
+                      )}
                       <span>{post.date}</span>
                       <span>•</span>
                       <span>{post.readTime}</span>
@@ -472,6 +480,16 @@ export default function Home() {
                 </Link>
               );
             })}
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
+            <Link
+              href="/writing"
+              className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-600 hover:text-neutral-900 border-b border-neutral-300 hover:border-neutral-900 pb-0.5 transition group"
+            >
+              <span>View all writings & project series ({posts.length})</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </section>
 

@@ -33,6 +33,8 @@ interface BlogPost {
   date: string;
   readTime: string;
   tags?: string[];
+  project?: string;
+  seriesOrder?: number;
   content?: string;
   createdAt?: string;
 }

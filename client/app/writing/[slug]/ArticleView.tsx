@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Calendar, Hash } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Hash, FolderGit2 } from 'lucide-react';
 
 export interface BlogPostData {
   _id?: string;
@@ -12,6 +12,8 @@ export interface BlogPostData {
   date: string;
   readTime: string;
   tags?: string[];
+  project?: string;
+  seriesOrder?: number;
   content?: string;
 }
 
@@ -321,19 +323,41 @@ export default function ArticleView({ slug }: { slug: string }) {
     <div className="min-h-screen bg-[#fafafa] text-neutral-800 antialiased selection:bg-neutral-200">
       <main className="max-w-[620px] mx-auto px-5 sm:px-6 pt-12 pb-20">
         {/* Navigation back */}
-        <div className="mb-8">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-100">
+          <Link
+            href="/writing"
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-neutral-400 hover:text-neutral-900 transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+            <span>All Writings</span>
+          </Link>
+
           <Link
             href="/"
-            aria-label="Back to portfolio"
-            title="Back to portfolio"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100/80 border border-transparent hover:border-neutral-200 transition group"
+            className="text-[11px] font-mono text-neutral-400 hover:text-neutral-700 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            Portfolio Home
           </Link>
         </div>
 
         {/* Article Header */}
         <header className="mb-6">
+          {post.project && (
+            <div className="mb-3.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50/90 border border-amber-200/70 text-[11px] font-mono text-amber-900">
+              <FolderGit2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>
+                Part of series:{' '}
+                <Link
+                  href={`/writing?project=${encodeURIComponent(post.project)}`}
+                  className="font-semibold underline underline-offset-2 hover:text-amber-950"
+                >
+                  {post.project}
+                </Link>
+                {post.seriesOrder ? ` (Part ${post.seriesOrder})` : ''}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400 mb-2.5">
             <span className="inline-flex items-center gap-1">
               <Calendar className="w-3 h-3 text-neutral-400" />

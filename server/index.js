@@ -305,8 +305,12 @@ app.get('/api/contact', async (req, res) => {
 // 6. Blog endpoints
 app.get('/api/posts', async (req, res) => {
   try {
-    let posts = await Post.find({ published: true }).sort({ order: 1, createdAt: -1 });
-    if (posts.length === 0) {
+    const query = { published: true };
+    if (req.query.project) {
+      query.project = req.query.project;
+    }
+    let posts = await Post.find(query).sort({ order: 1, seriesOrder: 1, createdAt: -1 });
+    if (posts.length === 0 && !req.query.project) {
       posts = await Post.insertMany(initialPosts);
     }
     res.json(posts);
