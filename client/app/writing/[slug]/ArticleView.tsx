@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Calendar, Hash, FileText } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Hash, FileText, Home } from 'lucide-react';
 
 export interface BlogPostData {
   _id?: string;
@@ -334,9 +334,11 @@ export default function ArticleView({ slug }: { slug: string }) {
 
           <Link
             href="/"
-            className="text-[11px] font-mono text-neutral-400 hover:text-neutral-700 transition-colors"
+            aria-label="Portfolio Home"
+            title="Portfolio Home"
+            className="w-7 h-7 rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 flex items-center justify-center transition"
           >
-            Portfolio Home
+            <Home className="w-4 h-4" />
           </Link>
         </div>
 
