@@ -179,6 +179,30 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+app.get('/api/posts/:slugOrId', async (req, res) => {
+  try {
+    const { slugOrId } = req.params;
+    let post = null;
+    if (mongoose.Types.ObjectId.isValid(slugOrId)) {
+      post = await Post.findById(slugOrId);
+    }
+    if (!post) {
+      post = await Post.findOne({ slug: slugOrId });
+    }
+    if (!post) {
+      post = initialPosts.find(p => p.slug === slugOrId || p._id === slugOrId);
+    }
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    const fallback = initialPosts.find(p => p.slug === req.params.slugOrId);
+    if (fallback) return res.json(fallback);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/posts', async (req, res) => {
   try {
     const post = new Post(req.body);

@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ArrowRight } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -22,11 +23,13 @@ interface Project {
 interface BlogPost {
   _id?: string;
   title: string;
+  slug?: string;
   description: string;
   date: string;
   readTime: string;
   link?: string;
   tags?: string[];
+  content?: string;
 }
 
 interface TechItem {
@@ -133,26 +136,26 @@ const defaultProjects: Project[] = [
 const defaultPosts: BlogPost[] = [
   {
     title: 'Designing Scalable Distributed Systems with Node.js & MongoDB',
+    slug: 'designing-scalable-distributed-systems-nodejs-mongodb',
     description: 'Deep dive into idempotency, distributed locks, database indexing strategies, and failure isolation patterns in high-throughput services.',
     date: 'Nov 2026',
     readTime: '6 min read',
-    link: 'https://substack.com/@shefin204168',
     tags: ['Distributed Systems', 'MongoDB', 'Node.js'],
   },
   {
     title: 'Fullstack Architecture: Why Next.js and Express Complement Each Other',
+    slug: 'fullstack-architecture-nextjs-express',
     description: 'How decoupling Edge UI rendering from dedicated compute backend workers creates resilient, maintainable production environments.',
     date: 'Oct 2026',
     readTime: '5 min read',
-    link: 'https://substack.com/@shefin204168',
     tags: ['Next.js', 'Express', 'System Design'],
   },
   {
     title: 'Building Microservices Without Over-Engineering',
+    slug: 'building-microservices-without-over-engineering',
     description: 'A pragmatic software engineer\'s perspective on when to break monoliths, managing data boundaries, and event-driven communication.',
     date: 'Aug 2026',
     readTime: '4 min read',
-    link: 'https://substack.com/@shefin204168',
     tags: ['Architecture', 'APIs', 'Engineering'],
   },
 ];
@@ -357,61 +360,56 @@ export default function Home() {
 
         {/* SECTION 2: WRITING */}
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium">
-              WRITING
-            </h2>
-            <a
-              href="https://substack.com/@shefin204168"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-mono text-neutral-400 hover:text-neutral-900 inline-flex items-center gap-1 transition group"
-            >
-              <span>Substack</span>
-              <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
-          </div>
+          <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
+            WRITING
+          </h2>
 
           <div className="space-y-3">
-            {posts.map((post, idx) => (
-              <a
-                key={post._id || idx}
-                href={post.link || 'https://substack.com/@shefin204168'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
-              >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
-                    <span>{post.date}</span>
-                    <span>•</span>
-                    <span>{post.readTime}</span>
+            {posts.map((post, idx) => {
+              const postSlug = post.slug || (idx === 0
+                ? 'designing-scalable-distributed-systems-nodejs-mongodb'
+                : idx === 1
+                ? 'fullstack-architecture-nextjs-express'
+                : 'building-microservices-without-over-engineering');
+
+              return (
+                <Link
+                  key={post._id || post.slug || idx}
+                  href={`/writing/${postSlug}`}
+                  className="group block border border-neutral-200 rounded-xl p-4 bg-white hover:border-neutral-300 transition-all"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-2 text-[10.5px] font-mono text-neutral-400">
+                      <span>{post.date}</span>
+                      <span>•</span>
+                      <span>{post.readTime}</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-800 group-hover:translate-x-0.5 transition" />
                   </div>
-                  <ArrowUpRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-neutral-800 transition" />
-                </div>
 
-                <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition leading-snug mb-1">
-                  {post.title}
-                </h3>
+                  <h3 className="text-xs font-mono font-semibold text-neutral-900 group-hover:text-amber-700 transition leading-snug mb-1">
+                    {post.title}
+                  </h3>
 
-                <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
-                  {post.description}
-                </p>
+                  <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
+                    {post.description}
+                  </p>
 
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-neutral-100">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[10px] font-mono px-1.5 py-[1px] leading-tight rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </a>
-            ))}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-neutral-100">
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-[10px] font-mono px-1.5 py-[1px] leading-tight rounded bg-neutral-100/70 text-neutral-600 border border-neutral-200/50"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         </section>
 
