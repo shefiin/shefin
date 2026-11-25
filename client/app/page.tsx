@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { TechIcon } from './components/TechIcons';
 import { SocialIcon } from './components/SocialIcons';
 import { AdminDrawer } from './components/AdminDrawer';
-import { getAuthHeaders } from './utils/auth';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { getAuthHeaders, verifyCurrentAuth } from './utils/auth';
+import { ArrowUpRight, ArrowRight, PenLine } from 'lucide-react';
 
 interface Project {
   _id?: string;
@@ -168,9 +168,20 @@ export default function Home() {
   const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
   const [isAdminDrawerOpen, setIsAdminDrawerOpen] = useState(false);
   const [isMongoLive, setIsMongoLive] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  const checkAdminAuth = async () => {
+    try {
+      const { authenticated } = await verifyCurrentAuth();
+      setIsAdminLoggedIn(authenticated);
+    } catch {
+      setIsAdminLoggedIn(false);
+    }
+  };
 
   // Fetch data from Express + MongoDB backend
   const fetchData = async () => {
+    checkAdminAuth();
     try {
       // 1. Health check
       const healthRes = await fetch('http://localhost:5001/api/health');
@@ -248,6 +259,18 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-neutral-900 font-mono py-16 px-6 sm:px-8">
+      {/* Admin Pencil Icon (Top Right) */}
+      {isAdminLoggedIn && (
+        <Link
+          href="/write"
+          title="Writing Studio"
+          aria-label="Writing Studio"
+          className="fixed top-5 right-5 sm:top-6 sm:right-6 z-40 w-9 h-9 rounded-full bg-white hover:bg-neutral-900 text-neutral-600 hover:text-white border border-neutral-200/90 shadow-xs flex items-center justify-center transition-all duration-200 group"
+        >
+          <PenLine className="w-4 h-4 text-neutral-600 group-hover:text-amber-400 transition-colors" />
+        </Link>
+      )}
+
       <div className="max-w-[620px] mx-auto">
         {/* Profile Avatar */}
         <div className="mb-6">
