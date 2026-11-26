@@ -20,6 +20,7 @@ const Post = require('./models/Post');
 const Admin = require('./models/Admin');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5001;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/shefin_portfolio';
 const isProduction = process.env.NODE_ENV === 'production';
@@ -41,6 +42,7 @@ const loginLimiter = rateLimit({
   max: 15,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false, forwardedHeader: false },
   message: { error: 'Too many login attempts. Please try again after 15 minutes.' }
 });
 
@@ -49,6 +51,7 @@ const contactLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false, forwardedHeader: false },
   message: { error: 'Too many messages sent. Please wait a few minutes before trying again.' }
 });
 
