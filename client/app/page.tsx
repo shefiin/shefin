@@ -489,7 +489,115 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 3: TECH STACK */}
+        {/* SECTION 3: WORK */}
+        <section className="mb-12">
+          <div className="mb-4">
+            <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-1">
+              WORK
+            </h2>
+            <p className="text-xs font-mono text-neutral-600 font-medium">
+              Freelance Software Developer · 2026 Mar - Oct
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            {/* Enlearn Academy */}
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex items-baseline gap-2.5">
+                  <span className="text-xs font-mono font-semibold text-neutral-900">
+                    Enlearn Academy
+                  </span>
+                  <Link
+                    href="/work/enlearn-academy"
+                    className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-900 transition"
+                  >
+                    Read case study
+                  </Link>
+                </div>
+                <a
+                  href="https://enlearnacademy.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 text-[11px] font-mono text-neutral-500 hover:text-amber-700 transition shrink-0"
+                >
+                  <span>View live</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              </div>
+              <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
+                Lead generation platform, admin panel with lead collection, custom mini CRM &amp; CMS — layered repository architecture, outbox workers &amp; Redis caching.
+              </p>
+            </div>
+
+            {/* Yox Fashion */}
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex items-baseline gap-2.5">
+                  <span className="text-xs font-mono font-semibold text-neutral-900">
+                    Yox Fashion
+                  </span>
+                  <Link
+                    href="/work/yox-fashion"
+                    className="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 underline underline-offset-2 decoration-neutral-300 hover:decoration-neutral-900 transition"
+                  >
+                    Read case study
+                  </Link>
+                </div>
+                <a
+                  href="http://yoxfashion.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 text-[11px] font-mono text-neutral-500 hover:text-amber-700 transition shrink-0"
+                >
+                  <span>View live</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              </div>
+              <p className="text-[11.5px] font-mono text-neutral-500 leading-relaxed">
+                Team Project - e-commerce platform with Clean Architecture, atomic inventory reservation, idempotent Razorpay webhooks &amp; granular RBAC.
+              </p>
+            </div>
+
+            {/* Landing Pages */}
+            <div className="pt-1">
+              <div className="text-[10.5px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+                Landing Pages
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-mono">
+                <a
+                  href="https://arbolfurniture.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-neutral-700 hover:text-amber-700 transition"
+                >
+                  <span>Arbol Furniture</span>
+                  <ArrowUpRight className="w-3 h-3 text-neutral-400" />
+                </a>
+                <a
+                  href="http://punathillandscaping.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-neutral-700 hover:text-amber-700 transition"
+                >
+                  <span>Punathil Landscape</span>
+                  <ArrowUpRight className="w-3 h-3 text-neutral-400" />
+                </a>
+                <a
+                  href="https://cuirassindustries.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-neutral-700 hover:text-amber-700 transition"
+                >
+                  <span>Cuirass Industries</span>
+                  <ArrowUpRight className="w-3 h-3 text-neutral-400" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 4: TECH STACK */}
         <section className="mb-12">
           <h2 className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 font-medium mb-3">
             TECH STACK
