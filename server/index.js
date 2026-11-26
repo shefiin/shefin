@@ -58,11 +58,24 @@ const allowedOrigins = [
   'http://127.0.0.1:3000'
 ].filter(Boolean);
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (!isProduction) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const { hostname } = new URL(origin);
+    if (hostname.endsWith('.vercel.app')) return true;
+  } catch {
+    return false;
+  }
+  return false;
+};
+
 const verifyAdmin = (req, res, next) => {
   const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
   if (!safeMethods.includes(req.method)) {
     const origin = req.headers.origin;
-    if (isProduction && origin && !allowedOrigins.includes(origin)) {
+    if (isProduction && origin && !isAllowedOrigin(origin)) {
       return res.status(403).json({ error: 'CSRF Protection: Request origin not permitted' });
     }
   }
@@ -109,7 +122,7 @@ const upload = multer({
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || !isProduction) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
         callback(new Error('Blocked by CORS policy'));
@@ -523,6 +536,10 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Shefin Portfolio Express Server running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Shefin Portfolio Express Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

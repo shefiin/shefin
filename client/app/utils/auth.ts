@@ -7,7 +7,9 @@ export interface AdminUser {
   role: string;
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+export const API_BASE_URL = typeof window === 'undefined'
+  ? (process.env.SERVER_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001')
+  : (process.env.NEXT_PUBLIC_API_URL || '');
 
 const USER_KEY = 'shefin_portfolio_admin_user';
 const TOKEN_KEY = 'shefin_portfolio_admin_token';
