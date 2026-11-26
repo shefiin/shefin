@@ -23,10 +23,10 @@ import {
   Plus
 } from 'lucide-react';
 import {
-  getAuthHeaders,
   clearAdminAuth,
   verifyCurrentAuth,
-  AdminUser
+  AdminUser,
+  API_BASE_URL
 } from '../utils/auth';
 import {
   Select,
@@ -144,7 +144,7 @@ export default function WritingStudio() {
 
   // Fetch available projects to populate Group / Series selector
   useEffect(() => {
-    fetch('http://localhost:5001/api/projects')
+    fetch(`${API_BASE_URL}/api/projects`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data)) {
@@ -178,7 +178,7 @@ export default function WritingStudio() {
   useEffect(() => {
     if (editSlug) {
       setInitialLoading(true);
-      fetch(`http://localhost:5001/api/posts/${editSlug}`)
+      fetch(`${API_BASE_URL}/api/posts/${editSlug}`)
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && data.title) {
@@ -285,16 +285,16 @@ export default function WritingStudio() {
 
     try {
       const url = postId
-        ? `http://localhost:5001/api/posts/${postId}`
-        : 'http://localhost:5001/api/posts';
+        ? `${API_BASE_URL}/api/posts/${postId}`
+        : `${API_BASE_URL}/api/posts`;
 
       const method = postId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
         method,
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          ...getAuthHeaders(),
         },
         body: JSON.stringify(postPayload),
       });

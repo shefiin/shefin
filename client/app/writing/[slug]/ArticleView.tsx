@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Clock, Calendar, Hash, FileText, Home, X, ZoomIn } from 'lucide-react';
+import DOMPurify from 'isomorphic-dompurify';
+import { API_BASE_URL } from '../../utils/auth';
 
 export interface BlogPostData {
   _id?: string;
@@ -390,7 +392,7 @@ export default function ArticleView({ slug }: { slug: string }) {
   const [lightboxImage, setLightboxImage] = useState<{ src: string; caption?: string } | null>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/posts/${slug}`)
+    fetch(`${API_BASE_URL}/api/posts/${slug}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data && data.title) {
@@ -483,7 +485,7 @@ export default function ArticleView({ slug }: { slug: string }) {
           {post.content && post.content.trim().startsWith('<') ? (
             <div
               className="article-body prose-custom text-[14.5px] font-sans text-neutral-800 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
             />
           ) : (
             <MarkdownBody

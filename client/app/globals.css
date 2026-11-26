@@ -8,7 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -37,15 +37,6 @@ body {
   background: #d4d4d4;
 }
 
-/* TipTap Editor & Prose Styles */
-.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #a3a3a3;
-  pointer-events: none;
-  height: 0;
-  font-family: inherit;
-}
 
 .prose-custom h2 {
   font-size: 1.35rem;

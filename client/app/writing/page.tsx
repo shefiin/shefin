@@ -16,7 +16,7 @@ import {
   Layers,
   Sparkles
 } from 'lucide-react';
-import { verifyCurrentAuth } from '../utils/auth';
+import { verifyCurrentAuth, API_BASE_URL } from '../utils/auth';
 
 interface BlogPost {
   _id?: string;
@@ -93,7 +93,7 @@ function WritingsList() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const res = await fetch('http://localhost:5001/api/posts');
+        const res = await fetch(`${API_BASE_URL}/api/posts`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

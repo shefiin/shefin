@@ -11,7 +11,8 @@ import {
 } from 'lucide-react';
 import {
   setAdminAuth,
-  verifyCurrentAuth
+  verifyCurrentAuth,
+  API_BASE_URL
 } from '../utils/auth';
 
 export default function LoginPage() {
@@ -42,9 +43,10 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           emailOrUsername: email.trim(),
           password

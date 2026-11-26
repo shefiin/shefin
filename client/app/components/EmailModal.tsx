@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../utils/auth';
 
 interface EmailModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ export function EmailModal({ isOpen, onClose, recipientEmail }: EmailModalProps)
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:5001/api/contact', {
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, message }),

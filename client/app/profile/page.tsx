@@ -19,10 +19,10 @@ import {
   X
 } from 'lucide-react';
 import {
-  getAuthHeaders,
   clearAdminAuth,
   verifyCurrentAuth,
-  AdminUser
+  AdminUser,
+  API_BASE_URL
 } from '../utils/auth';
 
 interface BlogPost {
@@ -71,7 +71,7 @@ export default function ProfilePage() {
   const fetchPosts = async () => {
     setLoadingPosts(true);
     try {
-      const res = await fetch('http://localhost:5001/api/posts');
+      const res = await fetch(`${API_BASE_URL}/api/posts`);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -103,11 +103,9 @@ export default function ProfilePage() {
     setDeleteError(null);
 
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${postToDelete._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/posts/${postToDelete._id}`, {
         method: 'DELETE',
-        headers: {
-          ...getAuthHeaders()
-        }
+        credentials: 'include'
       });
 
       if (res.status === 401) {

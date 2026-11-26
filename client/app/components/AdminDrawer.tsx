@@ -21,11 +21,11 @@ import {
   AlertCircle
 } from 'lucide-react';
 import {
-  getAuthHeaders,
   setAdminAuth,
   clearAdminAuth,
   verifyCurrentAuth,
-  AdminUser
+  AdminUser,
+  API_BASE_URL
 } from '../utils/auth';
 
 interface BlogPost {
@@ -136,9 +136,10 @@ export function AdminDrawer({
     setLoginError(null);
 
     try {
-      const res = await fetch('http://localhost:5001/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           emailOrUsername: loginEmail,
           password: loginPassword
@@ -175,7 +176,7 @@ export function AdminDrawer({
 
   const fetchHealth = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/health');
+      const res = await fetch(`${API_BASE_URL}/api/health`);
       const data = await res.json();
       setHealth(data);
     } catch {
@@ -186,7 +187,9 @@ export function AdminDrawer({
   const fetchMessages = async () => {
     setLoadingMessages(true);
     try {
-      const res = await fetch('http://localhost:5001/api/contact');
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         setMessages(data);
@@ -201,7 +204,7 @@ export function AdminDrawer({
   const fetchPosts = async () => {
     setLoadingPosts(true);
     try {
-      const res = await fetch('http://localhost:5001/api/posts');
+      const res = await fetch(`${API_BASE_URL}/api/posts`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setPosts(data);
@@ -221,12 +224,12 @@ export function AdminDrawer({
         ? newTags.split(',').map((t) => t.trim()).filter(Boolean)
         : [];
 
-      const res = await fetch('http://localhost:5001/api/projects', {
+      const res = await fetch(`${API_BASE_URL}/api/projects`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           title: newTitle,
           description: newDesc,
@@ -278,12 +281,12 @@ export function AdminDrawer({
         .replace(/^-+|-+$/g, '');
       const generatedSlug = cleanSlug ? `${cleanSlug}-${shortId}` : shortId;
 
-      const res = await fetch('http://localhost:5001/api/posts', {
+      const res = await fetch(`${API_BASE_URL}/api/posts`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           title: newPostTitle,
           slug: generatedSlug,
@@ -320,11 +323,9 @@ export function AdminDrawer({
     if (!postToDelete) return;
     setIsDeletingPost(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/posts/${postToDelete.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/posts/${postToDelete.id}`, {
         method: 'DELETE',
-        headers: {
-          ...getAuthHeaders()
-        }
+        credentials: 'include'
       });
 
       if (res.status === 401) {
@@ -344,34 +345,6 @@ export function AdminDrawer({
       console.error(err);
     } finally {
       setIsDeletingPost(false);
-    }
-  };
-
-  const handleResetSeed = async () => {
-    if (!confirm('Re-seed the database back to original portfolio defaults? This requires Admin authentication.')) return;
-    try {
-      const res = await fetch('http://localhost:5001/api/seed', {
-        method: 'POST',
-        headers: {
-          ...getAuthHeaders()
-        }
-      });
-
-      if (res.status === 401) {
-        handleLogout();
-        setLoginError('Session expired or unauthorized. Please sign in again.');
-        return;
-      }
-
-      if (res.ok) {
-        setActionNotice('Database re-seeded with initial portfolio data!');
-        setTimeout(() => setActionNotice(null), 3000);
-        fetchMessages();
-        fetchPosts();
-        onDataRefresh();
-      }
-    } catch (err) {
-      console.error(err);
     }
   };
 
@@ -936,22 +909,6 @@ export function AdminDrawer({
                         Busy / In Sprints
                       </button>
                     </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-2">
-                    <h4 className="text-xs font-semibold text-neutral-900 font-sans">
-                      Database Management
-                    </h4>
-                    <p className="text-[11px] font-mono text-neutral-500">
-                      Reset collections back to Shefin&apos;s clean default state from the reference design.
-                    </p>
-                    <button
-                      onClick={handleResetSeed}
-                      className="px-3 py-2 bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg text-xs font-mono transition flex items-center gap-1.5"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Re-seed MongoDB Defaults</span>
-                    </button>
                   </div>
 
                   <div className="p-3.5 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-1.5">

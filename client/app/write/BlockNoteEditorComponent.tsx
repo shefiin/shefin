@@ -6,7 +6,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { Image as ImageIcon, X, AlertCircle, Loader2 } from 'lucide-react';
-import { getAuthHeaders } from '../utils/auth';
+import { API_BASE_URL } from '../utils/auth';
 
 interface BlockNoteEditorProps {
   initialContent?: string;
@@ -66,11 +66,9 @@ export default function BlockNoteEditorComponent({
       const formData = new FormData();
       formData.append('file', pendingUpload.file);
 
-      const res = await fetch('http://localhost:5001/api/upload', {
+      const res = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
-        headers: {
-          ...getAuthHeaders(),
-        },
+        credentials: 'include',
         body: formData,
       });
 

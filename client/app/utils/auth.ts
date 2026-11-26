@@ -7,13 +7,10 @@ export interface AdminUser {
   role: string;
 }
 
-const TOKEN_KEY = 'shefin_portfolio_admin_token';
-const USER_KEY = 'shefin_portfolio_admin_user';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-export function getAdminToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_KEY);
-}
+const USER_KEY = 'shefin_portfolio_admin_user';
+const TOKEN_KEY = 'shefin_portfolio_admin_token';
 
 export function getStoredAdminUser(): AdminUser | null {
   if (typeof window === 'undefined') return null;
@@ -26,41 +23,54 @@ export function getStoredAdminUser(): AdminUser | null {
   }
 }
 
-export function setAdminAuth(token: string, user: AdminUser): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
-}
-
-export function clearAdminAuth(): void {
+export function setAdminAuth(tokenOrUser: any, possibleUser?: AdminUser): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+
+  const user = (possibleUser && typeof possibleUser === 'object')
+    ? possibleUser
+    : (tokenOrUser && typeof tokenOrUser === 'object' ? tokenOrUser : null);
+
+  if (user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
 }
 
-export function getAuthHeaders(): Record<string, string> {
-  const token = getAdminToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+export async function clearAdminAuth(): Promise<void> {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  }
+  try {
+    await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (err) {
+    console.warn('Failed to clear server session cookie:', err);
+  }
 }
+
 
 export async function verifyCurrentAuth(): Promise<{ authenticated: boolean; admin?: AdminUser }> {
-  const token = getAdminToken();
-  if (!token) return { authenticated: false };
-
   try {
-    const res = await fetch('http://localhost:5001/api/auth/me', {
-      headers: { Authorization: `Bearer ${token}` },
+    const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      credentials: 'include',
     });
     if (res.ok) {
       const data = await res.json();
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(USER_KEY, JSON.stringify(data.admin));
+      }
       return { authenticated: true, admin: data.admin };
     }
-    clearAdminAuth();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(USER_KEY);
+    }
     return { authenticated: false };
   } catch {
-    // If backend is unreachable but token is locally stored, return cached status
-    const cachedUser = getStoredAdminUser();
-    return { authenticated: !!cachedUser, admin: cachedUser || undefined };
+    return { authenticated: false };
   }
 }
+
 
