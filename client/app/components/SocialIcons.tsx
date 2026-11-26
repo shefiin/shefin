@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 
 export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: string; className?: string }) {
   const p = platform.toLowerCase();
@@ -34,25 +33,17 @@ export function SocialIcon({ platform, className = "w-3.5 h-3.5" }: { platform: 
 
   if (p.includes('bluesky')) {
     return (
-      <Image
-        src="/bluesky.webp"
-        alt="Bluesky"
-        width={14}
-        height={14}
-        className={`${className} object-contain rounded-xs`}
-      />
+      <svg viewBox="0 0 568 501" className={className} fill="#1185FE">
+        <path d="M123.121 33.664C188.241 82.553 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.874-1.811 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.25 122.392-162.626-64.692-182.08-140.274-2.827-10.984-5.353-20.803-7.253-29.046-1.9 8.243-4.426 18.062-7.253 29.046-19.454 75.582-62.83 262.666-182.08 140.274-63.111-64.76-33.889-129.52 80.986-149.07-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.126-1.812 123.121 33.664Z" />
+      </svg>
     );
   }
 
   if (p.includes('linkedin')) {
     return (
-      <Image
-        src="/linkedin.png"
-        alt="LinkedIn"
-        width={14}
-        height={14}
-        className={`${className} object-contain rounded-xs`}
-      />
+      <svg viewBox="0 0 24 24" className={className} fill="#0A66C2">
+        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+      </svg>
     );
   }
 

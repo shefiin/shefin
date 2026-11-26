@@ -313,6 +313,7 @@ export default function Home() {
               width={48}
               height={48}
               priority
+              unoptimized
               className="w-full h-full object-cover"
             />
           </div>
